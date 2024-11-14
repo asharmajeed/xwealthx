@@ -12,7 +12,7 @@ const HomePage = () => {
   const responseGoogle = async (authResult) => {
     try {
       if (authResult["code"]) {
-        const result = await googleAuth(authResult.code);
+        const result = await fetch(`https://xwealthx.vercel.app/auth/google?code=${authResult.code}`);
         const { email, name, image } = result.data.user;
         const token = result.data.token;
         const obj = { email, name, token, image };
