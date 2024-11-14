@@ -7,7 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
-    origin: "https://xwealthx-8dga.vercel.app", // Replace with your frontend origin
+    origin: "*", // Replace with your frontend origin
     // credentials: true, // Allow credentials (cookies, auth)
   };
 
