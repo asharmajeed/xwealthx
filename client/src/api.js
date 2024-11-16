@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: "https://xwealthx.vercel.app/api/auth/",
+    baseURL: "https://xwealthx.vercel.app/auth/",
     // withCredentials: true,
 });
 

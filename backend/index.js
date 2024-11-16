@@ -12,7 +12,7 @@ const corsOptions = {
   };
 
 app.use(cors(corsOptions));
-app.use('/api/auth/', authRoutes); // <- NEW LINE
+app.use('/auth/', authRoutes); // <- NEW LINE
 
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`)
