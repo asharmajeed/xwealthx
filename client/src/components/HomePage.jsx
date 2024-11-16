@@ -36,9 +36,9 @@ const HomePage = () => {
   return (
     <div className="p-8">
       <Header />
-      <section className="flex justify-between items-start space-x-8 pt-4">
+      <section className="flex flex-col gap-y-8 md:flex-row justify-between items-start lg:space-x-8 pt-4">
         {/* Left Side */}
-        <div className="w-1/2 bg-backgroundBlue p-6 rounded-md">
+        <div className="lg:w-1/2 bg-backgroundBlue p-6 rounded-md">
           <h1 className="text-2xl font-bold text-blue-900 mb-4">
             Connect with a CFP® Professional for Expert Financial Planning
           </h1>
@@ -56,7 +56,7 @@ const HomePage = () => {
         </div>
 
         {/* Right Side */}
-        <div className="w-1/2 bg-backgroundBlue p-6 rounded-md">
+        <div className="lg:w-1/2 bg-backgroundBlue p-6 rounded-md">
           <h1 className="text-2xl font-bold text-blue-900 mb-4">
             Prepare for the CFP® Exam with Confidence
           </h1>
