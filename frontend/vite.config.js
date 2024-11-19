@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api/": "https://google-login-backend.vercel.app",
+      "/api/": "https://xwealthx.vercel.app",
     },
   },
 })
