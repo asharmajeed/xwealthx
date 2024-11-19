@@ -33,7 +33,7 @@ const HomePage = () => {
 
         // Use secure storage for sensitive information.
         localStorage.setItem("user-info", JSON.stringify(userObj));
-        navigate("/dashboard");
+        navigate("/studentdashboard");
       } else {
         console.error("No authorization code received", authResult);
         throw new Error("No authorization code received");
