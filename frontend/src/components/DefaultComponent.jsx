@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import AlternateComponent from "./AlternateComponent";
-import { useNavigate } from "react-router-dom";
 
 // Define the Default Component
 const DefaultComponent = ({ onBack }) => {
-  const [showPopup, setShowPopup] = useState(false);
   const [showAlternate, setShowAlternate] = useState(false);
   const [subject, setSubject] = useState("");
 
@@ -32,22 +30,6 @@ const DefaultComponent = ({ onBack }) => {
   const handleEPClick = () => {
     setShowAlternate(true); // Show the alternate page when a workout item is clicked
     setSubject("EP");
-  };
-
-  // Handle other button clicks (for popup)
-  const handleOtherButtonClick = () => {
-    setShowPopup(true); // Show popup for other buttons
-  };
-  const navigate = useNavigate();
-  // Handle start quiz button in the popup
-  const handleStartQuiz = () => {
-    setShowPopup(false); // Close the popup and maybe start the quiz
-    navigate("/quiz");
-  };
-
-  // Handle closing the popup
-  const handleClosePopup = () => {
-    setShowPopup(false); // Close the popup when the close button is clicked
   };
 
   // Handle going back to the default page from the alternate page
@@ -131,7 +113,7 @@ const DefaultComponent = ({ onBack }) => {
             <h3>Flashcards</h3>
             <p>Practice Flashcards</p>
             <p>Available: 1,307</p>
-            <button style={selectButtonStyle} onClick={handleOtherButtonClick}>
+            <button style={selectButtonStyle}>
               Select subjects
             </button>
           </div>
@@ -145,25 +127,10 @@ const DefaultComponent = ({ onBack }) => {
               <p>10 Qs, 15 mins</p>
               <p>Runs for: 3 days</p>
             </div>
-            <button style={showAllButtonStyle} onClick={handleOtherButtonClick}>
+            <button style={showAllButtonStyle}>
               Show All
             </button>
           </div>
-
-          {/* Popup logic */}
-          {showPopup && (
-            <div style={popupStyle}>
-              <div style={popupHeaderStyle}>
-                <p>Start the quiz now?</p>
-                <button onClick={handleClosePopup} style={closeButtonStyle}>
-                  X
-                </button>
-              </div>
-              <button onClick={handleStartQuiz} style={startQuizButtonStyle}>
-                Start Quiz Now
-              </button>
-            </div>
-          )}
         </div>
       )}
     </div>
@@ -228,47 +195,6 @@ const showAllButtonStyle = {
   borderRadius: "8px",
   fontSize: "14px",
   cursor: "pointer",
-};
-
-// Popup style
-const popupStyle = {
-  position: "fixed",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  backgroundColor: "#fff",
-  padding: "20px",
-  borderRadius: "8px",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-  zIndex: 1000,
-};
-
-const startQuizButtonStyle = {
-  padding: "10px 20px",
-  backgroundColor: "#4caf50",
-  color: "white",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontSize: "16px",
-};
-
-// Close button style for the popup
-const closeButtonStyle = {
-  position: "absolute",
-  top: "10px",
-  right: "10px",
-  backgroundColor: "transparent",
-  border: "none",
-  color: "#888",
-  fontSize: "18px",
-  cursor: "pointer",
-};
-
-const popupHeaderStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
 };
 
 // Style for the back button
