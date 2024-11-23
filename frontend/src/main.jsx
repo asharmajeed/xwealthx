@@ -1,60 +1,70 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.jsx";
-import "./index.css";
 import {
-  Route,
-  RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
+  RouterProvider,
+  Route,
 } from "react-router-dom";
-import ScoreDashboard from "./components/ScoreDashboard";
-import { questions } from "./data/questions";
-import App2 from "./App2.jsx";
-import StudentDashboard from "./StudentDashboard.jsx";
-import ConsultationForm from "./components/ConsultationForm.jsx";
-import PrivateRoute from "./components/PrivateRoute.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { UserProvider } from "./context/UserContext.jsx";
-import GPQuiz from "./quizes/GPQuiz.jsx";
-import RMQuiz from "./quizes/RMQuiz.jsx";
-import IPQuiz from "./quizes/IPQuiz.jsx";
-import TPQuiz from "./quizes/TPQuiz.jsx";
-import RSQuiz from "./quizes/RSQuiz.jsx";
-import EPQuiz from "./quizes/EPQuiz.jsx";
+import "./index.css";
 
+// Context and Components
+import { UserProvider, useUser } from "./context/UserContext.jsx";
+import { SubjectProvider } from "./context/QuizContext.jsx";
+import App from "./App.jsx";
+import { Home, StudentDashboard, Quiz } from "./pages";
+import { PrivateRoute, ConsultationForm } from "./components";
+
+// Google OAuth Wrapper
 const GoogleWrapper = () => (
   <GoogleOAuthProvider clientId="423390367187-a0itrkdbugkrv0tsbua5hlks56pdpref.apps.googleusercontent.com">
-    <App2 />
+    <Home />
   </GoogleOAuthProvider>
 );
+
+// Dynamic Home component
+const DynamicHome = () => {
+  const { userInfo } = useUser(); // Check login status from context
+
+  // Render StudentDashboard if logged in, otherwise render GoogleWrapper
+  return userInfo ? <StudentDashboard /> : <GoogleWrapper />;
+};
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      <Route index={true} path="/" element={<GoogleWrapper />} />
+      {/* Dynamic home route */}
+      <Route index element={<DynamicHome />} />
+
+      {/* Public Routes */}
       <Route path="/consultation-form" element={<ConsultationForm />} />
-      <Route path="" element={<PrivateRoute />}>
-        <Route path="/general-principle-quiz" element={<GPQuiz />} />
-        <Route path="/risk-management-quiz" element={<RMQuiz />} />
-        <Route path="/investment-planning-quiz" element={<IPQuiz />} />
-        <Route path="/tax-planning-quiz" element={<TPQuiz />} />
-        <Route path="/retirement-quiz" element={<RSQuiz />} />
-        <Route path="/estate-planning-quiz" element={<EPQuiz />} />
-        <Route
-          path="/dashboard"
-          element={<ScoreDashboard questions={questions} />}
-        />
-        <Route path="/studentdashboard" element={<StudentDashboard />} />
+
+      {/* Private Routes */}
+      <Route element={<PrivateRoute />}>
+        <Route path="/quiz/:subjectName" element={<Quiz />} />
       </Route>
     </Route>
   )
 );
 
+// Root Rendering
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <UserProvider>
-      <RouterProvider router={router} />
+      <SubjectProvider>
+        <RouterProvider
+          router={router}
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+            v7_fetcherPersist: true,
+            v7_normalizeFormMethod: true,
+            v7_partialHydration: true,
+            v7_skipActionErrorRevalidation: true,
+          }}
+        />
+      </SubjectProvider>
     </UserProvider>
   </StrictMode>
 );
