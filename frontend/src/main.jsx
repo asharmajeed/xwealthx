@@ -12,9 +12,24 @@ import "./index.css";
 // Context and Components
 import { UserProvider, useUser } from "./context/UserContext.jsx";
 import { SubjectProvider } from "./context/QuizContext.jsx";
+import store from "./redux/store.js";
 import App from "./App.jsx";
-import { Home, StudentDashboard, Quiz } from "./pages";
+import {
+  ExamDrills,
+  Home,
+  Premium,
+  Quiz,
+  Revision,
+  RevisionDrills,
+  Subject,
+  SubjectDrills,
+  SubjectQuiz,
+  TutorForm,
+} from "./pages";
 import { PrivateRoute, ConsultationForm } from "./components";
+import { Provider } from "react-redux";
+import EPQuiz from "./pages/Quiz/EPQuiz.jsx";
+import HomeLoggedIn from "./pages/Home/HomeLoggedIn.jsx";
 
 // Google OAuth Wrapper
 const GoogleWrapper = () => (
@@ -28,7 +43,7 @@ const DynamicHome = () => {
   const { userInfo } = useUser(); // Check login status from context
 
   // Render StudentDashboard if logged in, otherwise render GoogleWrapper
-  return userInfo ? <StudentDashboard /> : <GoogleWrapper />;
+  return userInfo ? <HomeLoggedIn /> : <GoogleWrapper />;
 };
 
 const router = createBrowserRouter(
@@ -39,10 +54,19 @@ const router = createBrowserRouter(
 
       {/* Public Routes */}
       <Route path="/consultation-form" element={<ConsultationForm />} />
+      <Route path="/tutor-form" element={<TutorForm />} />
 
       {/* Private Routes */}
       <Route element={<PrivateRoute />}>
+        <Route path="/revision-drills/revision" element={<Revision />} />
         <Route path="/quiz/:subjectName" element={<Quiz />} />
+        <Route path="/estate-quiz" element={<EPQuiz />} />
+        <Route path="/revision-drills" element={<RevisionDrills />} />
+        <Route path="/subject-drills" element={<SubjectDrills />} />
+        <Route path="/subject-drills/:subjectName" element={<Subject />} />
+        <Route path="/subject-quiz/:subjectName" element={<SubjectQuiz />} />
+        <Route path="/exam-drills" element={<ExamDrills />} />
+        <Route path="/premium" element={<Premium />} />
       </Route>
     </Route>
   )
@@ -53,17 +77,19 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <UserProvider>
       <SubjectProvider>
-        <RouterProvider
-          router={router}
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-            v7_fetcherPersist: true,
-            v7_normalizeFormMethod: true,
-            v7_partialHydration: true,
-            v7_skipActionErrorRevalidation: true,
-          }}
-        />
+        <Provider store={store}>
+          <RouterProvider
+            router={router}
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+              v7_fetcherPersist: true,
+              v7_normalizeFormMethod: true,
+              v7_partialHydration: true,
+              v7_skipActionErrorRevalidation: true,
+            }}
+          />
+        </Provider>
       </SubjectProvider>
     </UserProvider>
   </StrictMode>

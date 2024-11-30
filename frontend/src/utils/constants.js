@@ -1,1 +1,13 @@
-export const BASE_URL = "https://xwealthx.vercel.app";
+export const BASE_URL = "http://localhost:5000";
+export const GPQuestion_URL = "/api/quiz-data/gp-questions";
+export const RMQuestion_URL = "/api/quiz-data/rm-questions";
+export const IPQuestion_URL = "/api/quiz-data/ip-questions";
+export const TPQuestion_URL = "/api/quiz-data/tp-questions";
+export const RSQuestion_URL = "/api/quiz-data/rs-questions";
+export const EPQuestion_URL = "/api/quiz-data/ep-questions";
+export const GPgfQuestion_URL = "/api/quiz-data/gp-gf-questions";
+export const RMgfQuestion_URL = "/api/quiz-data/rm-gf-questions";
+export const IPgfQuestion_URL = "/api/quiz-data/ip-gf-questions";
+export const TPgfQuestion_URL = "/api/quiz-data/tp-gf-questions";
+export const RSgfQuestion_URL = "/api/quiz-data/rs-gf-questions";
+export const EPgfQuestion_URL = "/api/quiz-data/ep-gf-questions";

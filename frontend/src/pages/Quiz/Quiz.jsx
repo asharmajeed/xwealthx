@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import MCQ from "./MCQ";
 import { useNavigate, useParams } from "react-router-dom";
+import { useFetch20GPQuestionsQuery as fetchGPQuestions } from "../../redux/api/gPQuestionApiSlice";
+// import { useFetchGPgfQuestionsQuery as fetchGPgfQuestions } from "../../redux/api/gPgfQuestionApiSlice";
+import { useFetch20RMQuestionsQuery as fetchRMQuestions } from "../../redux/api/rMQuestionApiSlice";
+import { useFetch20IPQuestionsQuery as fetchIPQuestions } from "../../redux/api/iPQuestionApiSlice";
+import { useFetch20TPQuestionsQuery as fetchTPQuestions } from "../../redux/api/tPQuestionApiSlice";
+import { useFetch20RSQuestionsQuery as fetchRSQuestions } from "../../redux/api/rSQuestionApiSlice";
+import { useFetch20EPQuestionsQuery as fetchEPQuestions } from "../../redux/api/ePQuestionApiSlice";
 
 const Quiz = () => {
   const { subjectName } = useParams();
@@ -8,8 +15,10 @@ const Quiz = () => {
   const navigate = useNavigate();
   const storageKey = `quizProgress_${subject}`;
 
-  const [questions, setQuestions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [quizSessionId, setQuizSessionId] = useState(() => {
+  //   // Get quizSessionId from localStorage if it exists
+  //   return localStorage.getItem("quizSessionId");
+  // });
 
   // Initialize states from localStorage or use defaults
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
@@ -30,45 +39,78 @@ const Quiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Dynamically load questions from file based on subject
-  useEffect(() => {
-    const loadQuestions = async () => {
-      try {
-        setIsLoading(true);
-        let questionsData;
-        switch (subject) {
-          case "General Principles of Financial Planning":
-            questionsData = (await import("../../data/GPQuestions")).finalArray;
-            break;
-          case "Risk Management and Insurance Planning":
-            questionsData = (await import("../../data/RMQuestions")).finalArray;
-            break;
-          case "Investment Planning":
-            questionsData = (await import("../../data/IPQuestions")).finalArray;
-            break;
-          case "Tax Planning":
-            questionsData = (await import("../../data/TPQuestions")).finalArray;
-            break;
-          case "Retirement Savings and Income Planning":
-            questionsData = (await import("../../data/RSQuestions")).finalArray;
-            break;
-          case "Estate Planning":
-            questionsData = (await import("../../data/EPQuestions")).finalArray;
-            break;
-          default:
-            throw new Error("Subject not found");
-        }
-        setQuestions(questionsData);
-      } catch (error) {
-        console.error(error);
-        alert("Error loading questions.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Fetch data for all subjects
+  const {
+    data: GPQuestions,
+    isLoading: loadingGP,
+    error: errorGP,
+  } = fetchGPQuestions();
+  // const { data: GPQuestions = [], isLoading: loadingGP, error: errorGP } = fetchGPQuestions()
+  // const { data: GPgfQuestions = [], isLoading: loadingGPgf, error: errorGPgf } = fetchGPgfQuestions()
+  const {
+    data: RMQuestions,
+    isLoading: loadingRM,
+    error: errorRM,
+  } = fetchRMQuestions();
+  const {
+    data: IPQuestions,
+    isLoading: loadingIP,
+    error: errorIP,
+  } = fetchIPQuestions();
+  const {
+    data: TPQuestions,
+    isLoading: loadingTP,
+    error: errorTP,
+  } = fetchTPQuestions();
+  const {
+    data: RSQuestions,
+    isLoading: loadingRS,
+    error: errorRS,
+  } = fetchRSQuestions();
+  const {
+    data: EPQuestions,
+    isLoading: loadingEP,
+    error: errorEP,
+  } = fetchEPQuestions();
 
-    loadQuestions();
-  }, [subject]);
+  // Ensure each data is an array, use fallback if undefined or null
+  // const mergedGPQuestions = Array.isArray(GPQuestions) ? GPQuestions : [];
+  // const mergedGPgfQuestions = Array.isArray(GPgfQuestions) ? GPgfQuestions : [];
+
+  // Merge the question arrays for each subject
+  // const allGPQuestions = [...mergedGPQuestions, ...mergedGPgfQuestions];
+
+  const getQuestionsForSubject = () => {
+    switch (subject) {
+      case "General Principles of Financial Planning":
+        return GPQuestions;
+      case "Risk Management and Insurance Planning":
+        return RMQuestions;
+      case "Investment Planning":
+        return IPQuestions;
+      case "Tax Planning":
+        return TPQuestions;
+      case "Retirement Savings and Income Planning":
+        return RSQuestions;
+      case "Estate Planning":
+        return EPQuestions;
+      default:
+        return [];
+    }
+  };
+
+  const questions = getQuestionsForSubject();
+
+  // useEffect(() => {
+  //   if (
+  //     GPQuestions?.quizSessionId &&
+  //     GPQuestions.quizSessionId !== quizSessionId
+  //   ) {
+  //     // Save new session ID to state and localStorage
+  //     setQuizSessionId(GPQuestions.quizSessionId);
+  //     localStorage.setItem("quizSessionId", GPQuestions.quizSessionId);
+  //   }
+  // }, [GPQuestions, quizSessionId]);
 
   // Save progress to localStorage whenever states change
   useEffect(() => {
@@ -144,6 +186,9 @@ const Quiz = () => {
   };
 
   const handleFinishQuiz = () => {
+    // setQuizSessionId(null);
+    // localStorage.removeItem("quizSessionId");
+
     // Clear progress for this subject
     localStorage.removeItem(storageKey);
     localStorage.removeItem(`${subject}_quiz_lastVisitedTime`);
@@ -153,7 +198,7 @@ const Quiz = () => {
       state: {
         subject: subject,
         score: correctAnswersCount,
-        total: questions.length,
+        total: questions?.length,
       },
     });
   };
@@ -170,14 +215,33 @@ const Quiz = () => {
     setTimeLeft(120); // Reset timer
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  const isLoading =
+    loadingGP || loadingRM || loadingIP || loadingTP || loadingRS || loadingEP;
+  const error = errorGP || errorRM || errorIP || errorTP || errorRS || errorEP;
 
-  if (questions.length === 0) return <div>No Subject Found</div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen w-full">
+        Loading...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-screen w-full">
+        Error loading questions
+      </div>
+    );
+  if (questions?.length === 0)
+    return (
+      <div className="flex justify-center items-center h-screen w-full">
+        No questions found for this subject
+      </div>
+    );
 
   return (
     <div className="min-h-screen p-8 bg-gray-100">
       <h2 className="text-2xl mb-4">
-        {subject} - Question {currentQuestionIndex + 1}/{questions.length}
+        {subject} - Question {currentQuestionIndex + 1}/{questions?.length}
         <pre className="text-base pt-2 text-wrap">
           {questions[currentQuestionIndex]?.text}
         </pre>

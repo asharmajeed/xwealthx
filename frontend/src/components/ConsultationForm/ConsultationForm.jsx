@@ -2,7 +2,7 @@ import { Logo } from "../";
 
 const ConsultationForm = () => {
   return (
-    <div className="bg-[#0A3C4B] pb-8 px-4 md:px-0">
+    <div className="bg-[#0A3C4B] pb-8 px-4 md:px-0 min-h-screen">
       <div className="py-2 px-6">
         <Logo />
       </div>

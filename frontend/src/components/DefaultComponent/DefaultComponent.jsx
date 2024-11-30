@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AlternateComponent } from "../";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSubject } from "../../context/QuizContext";
 
 const DefaultComponent = () => {
@@ -113,33 +113,29 @@ const DefaultComponent = () => {
           <div className="border border-gray-200 rounded-lg p-4 mb-4 shadow bg-white">
             <h3 className="text-lg font-bold mb-2">Revision</h3>
             <p className="text-gray-700">Daily Revision</p>
-            <p className="text-gray-500">
-              Revise mistakes from the last 3 days to improve on your weak
-              areas.
+            <p className="text-gray-500 mb-4">
+              Sharpen your knowledge with focused revision drills—practice,
+              refine, and excel.
             </p>
-            <p className="text-gray-500">Questions Available: 0</p>
-            <button
-              className="px-4 py-2 bg-gray-300 text-gray-600 rounded-md cursor-not-allowed mt-3"
-              disabled
-            >
+            <Link to="/revision-drills/revision" className="px-4 py-2 border border-pink-600 text-pink-600 bg-white rounded-md hover:bg-pink-50">
               Start
-            </button>
+            </Link>
           </div>
 
           {/* Flashcards Section */}
           <div className="border border-gray-200 rounded-lg p-4 mb-4 shadow bg-white">
             <h3 className="text-lg font-bold mb-2">Flashcards</h3>
             <p className="text-gray-700">Practice Flashcards</p>
-            <p className="text-gray-500">Available: 1,307</p>
-            <button className="px-4 py-2 border border-pink-600 text-pink-600 bg-white rounded-md hover:bg-pink-50 mt-3">
+            <p className="text-gray-500 mb-4">Available: 1,307</p>
+            <button className="px-4 py-2 border border-pink-600 text-pink-600 bg-white rounded-md hover:bg-pink-50">
               Select Subjects
             </button>
           </div>
 
           {/* Daily Test Series Section */}
-          <div className="border border-gray-200 rounded-lg p-4 mb-4 shadow bg-white">
+          {/* <div className="border border-gray-200 rounded-lg p-4 mb-4 shadow bg-white">
             <h3 className="text-lg font-bold mb-2">Daily Test Series</h3>
-            <div className="border border-gray-300 rounded-lg p-3 bg-pink-50 mb-3">
+            <div className="border border-gray-300 rounded-lg p-3 bg-pink-50 mb-4">
               <p className="text-sm text-gray-600">THU, 21 NOV</p>
               <p className="text-base font-medium text-gray-800">
                 CFP® Exam Prep Rapid Quiz
@@ -150,7 +146,7 @@ const DefaultComponent = () => {
             <button className="px-4 py-2 border border-pink-600 text-pink-600 bg-white rounded-md hover:bg-pink-50">
               Show All
             </button>
-          </div>
+          </div> */}
         </div>
       )}
     </div>

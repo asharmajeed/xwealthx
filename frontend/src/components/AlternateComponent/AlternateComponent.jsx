@@ -31,7 +31,10 @@ function AlternateComponent() {
         All Topics
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <TopicCard title="Client and planner attitudes, values, biases" icon="➕➖" />
+        <TopicCard
+          title="Client and planner attitudes, values, biases"
+          icon="➕➖"
+        />
         <TopicCard title="Behavioral finance" icon="📈" />
         <TopicCard title="Sources for money conflict" icon="💲⚙️" />
         <TopicCard title="Principles of counseling" icon="👥" />
