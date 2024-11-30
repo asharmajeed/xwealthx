@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:5000";
+export const BASE_URL = "https://xwealthx.vercel.app";
 export const GPQuestion_URL = "/api/quiz-data/gp-questions";
 export const RMQuestion_URL = "/api/quiz-data/rm-questions";
 export const IPQuestion_URL = "/api/quiz-data/ip-questions";
