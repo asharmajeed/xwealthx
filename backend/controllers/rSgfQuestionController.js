@@ -1,7 +1,6 @@
 import { RSgfQuestion } from "../models/questionModel.js";
 import { v4 as uuidv4 } from "uuid"; // Import UUID generator
-
-const quizSessionCache = new Map(); // Temporary in-memory storage
+import { setQuizSession, getQuizSession } from "../utils/cacheHelpers.js";
 
 export const addQuestion = async (req, res) => {
   try {
@@ -68,42 +67,37 @@ export const getRandom85Questions = async (req, res) => {
   }
 };
 
-// Cache duration in milliseconds (30 minutes)
-const CACHE_DURATION_MS = 8000 * 60 * 1000;
-
+/**
+ * Fetch all questions in random order, with caching for quiz sessions.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const getAllQuestionsRandomOrder = async (req, res) => {
   try {
     const { quizSessionId } = req.query;
 
-    // Check if the session exists in the cache
-    if (quizSessionId && quizSessionCache.has(quizSessionId)) {
-      return res.status(200).json({
-        quizSessionId,
-        questions: quizSessionCache.get(quizSessionId),
-      });
+    // Check if session data exists in Redis
+    if (quizSessionId) {
+      const cachedQuestions = await getQuizSession(quizSessionId);
+      if (cachedQuestions) {
+        return res.status(200).json({ quizSessionId, questions: cachedQuestions });
+      }
     }
 
-    // Fetch all random questions using MongoDB aggregation
-    const questions = await RSgfQuestion.aggregate([
-      { $sample: { size: await RSgfQuestion.countDocuments() } },
-    ]);
+    // Fetch random questions using MongoDB aggregation
+    const totalQuestions = await RSgfQuestion.countDocuments();
+    const questions = await RSgfQuestion.aggregate([{ $sample: { size: totalQuestions } }]);
 
     // Generate a new quiz session ID
     const newQuizSessionId = uuidv4();
 
-    // Store the questions in the cache with the new session ID
-    quizSessionCache.set(newQuizSessionId, questions);
-
-    // Set a timeout to clear the session cache after 30 minutes
-    setTimeout(() => quizSessionCache.delete(newQuizSessionId), CACHE_DURATION_MS);
+    // Store questions in Redis with expiration
+    await setQuizSession(newQuizSessionId, questions);
 
     // Respond with the new quiz session ID and questions
-    res.status(200).json({
-      quizSessionId: newQuizSessionId,
-      questions,
-    });
+    res.status(200).json({ quizSessionId: newQuizSessionId, questions });
   } catch (error) {
-    console.error('Error fetching questions:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching questions:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
