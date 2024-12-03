@@ -39,6 +39,7 @@ const io = new Server(server, {
   cors: {
     origin: "https://xwealthx-8dga.vercel.app", // Frontend origin
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
