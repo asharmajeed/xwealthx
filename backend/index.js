@@ -39,7 +39,6 @@ const io = new Server(server, {
   cors: {
     origin: "https://xwealthx-8dga.vercel.app", // Frontend origin
     methods: ["GET", "POST"],
-    credentials: true,
   },
 });
 
@@ -69,8 +68,13 @@ app.all("*", (req, res) => {
 //   console.log(`Server is running on ${PORT}`);
 // });
 
-server.listen(PORT, () => {
-  console.log(`Server is running on ${PORT}`);
-});
+// server.listen(PORT, () => {
+//   console.log(`Server is running on ${PORT}`);
+// });
 
 export { io };
+
+// Export a function that Vercel can use to handle requests
+export default function handler(req, res) {
+  app(req, res); // Let Express handle the request
+}
