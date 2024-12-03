@@ -74,13 +74,8 @@ app.all("*", (req, res) => {
 
 export { io };
 
-// Export Express app and Socket.IO handler for Vercel
+// Export a function that Vercel can use to handle requests
 export default function handler(req, res) {
-  if (req.url.startsWith("/socket.io")) {
-    // Handle Socket.IO requests
-    io.engine.handleRequest(req, res);
-  } else {
-    // Handle API requests with Express
-    app(req, res);
-  }
+  io.engine.handleRequest(req, res);
+  app(req, res); // Let Express handle the request
 }
