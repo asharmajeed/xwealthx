@@ -1,16 +1,21 @@
 import { Link, NavLink } from "react-router-dom";
-import { useUser } from "../../context/UserContext";
-import { BASE_URL } from "../../utils/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { useLogoutMutation } from "../../redux/api/usersApiSlice";
+import { logout } from "../../redux/features/authSlice";
 
 const Sidebar = ({ isSidebarOpen }) => {
-  const { userInfo, logout } = useUser();
+  const { userInfo } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  const [logoutApiCall] = useLogoutMutation();
 
   const handleLogout = async () => {
-    await fetch(`${BASE_URL}/api/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    logout();
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -26,18 +31,25 @@ const Sidebar = ({ isSidebarOpen }) => {
           className="w-12 h-12 rounded-full mb-2"
         />
         <h4 className="text-lg font-semibold">{userInfo?.name}</h4>
+        {userInfo?.isAdmin && (
+          <Link to="/admin-dashboard" className="text-pink-500 underline">
+            Admin Dashboard
+          </Link>
+        )}
       </div>
       <nav className="space-y-2 p-4">
-        <NavLink
-          to="/premium"
-          className={({ isActive }) =>
-            `block px-3 py-2 rounded-md hover:bg-gray-200 ${
-              isActive && "bg-gray-200"
-            }`
-          }
-        >
-          🔒 Go Premium
-        </NavLink>
+        {!userInfo?.isPremium && (
+          <NavLink
+            to="/premium"
+            className={({ isActive }) =>
+              `block px-3 py-2 rounded-md hover:bg-gray-200 ${
+                isActive && "bg-gray-200"
+              }`
+            }
+          >
+            🔒 Go Premium
+          </NavLink>
+        )}
         <NavLink
           to="/subject-drills"
           className={({ isActive }) =>
@@ -68,7 +80,11 @@ const Sidebar = ({ isSidebarOpen }) => {
         >
           📄 Exam Drills: 85 Questions in 3 Hours
         </NavLink>
-        <Link to="/tutor-form" target="_blank" className="block px-3 py-2 rounded-md hover:bg-gray-200">
+        <Link
+          to="/tutor-form"
+          target="_blank"
+          className="block px-3 py-2 rounded-md hover:bg-gray-200"
+        >
           👥 Sign up for CFP® Tutor 1:1 at $50 an hour
         </Link>
         <h5 className="text-lg font-medium text-gray-800 mb-3">Actions</h5>

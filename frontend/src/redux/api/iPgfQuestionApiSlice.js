@@ -41,7 +41,7 @@ export const iPgfQuestionApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
-    fetch20IPgfQuestions: builder.query({
+    fetch30IPgfQuestions: builder.query({
       query: () => ({
         url: `${IPgfQuestion_URL}/first20`,
         credentials: "include",
@@ -51,8 +51,10 @@ export const iPgfQuestionApiSlice = apiSlice.injectEndpoints({
     }),
 
     fetchRandomIPgfQuestions: builder.query({
-      query: () => ({
-        url: `${IPgfQuestion_URL}/random85`,
+      query: (examSessionId) => ({
+        url: `${IPgfQuestion_URL}/random85${
+          examSessionId ? `?examSessionId=${examSessionId}` : ""
+        }`,
         credentials: "include",
       }),
       providesTags: ["IPgfQuestion"],
@@ -81,7 +83,7 @@ export const {
   useUpdateIPgfQuestionMutation,
   useDeleteIPgfQuestionMutation,
   useFetchIPgfQuestionsQuery,
-  useFetch20IPgfQuestionsQuery,
+  useFetch30IPgfQuestionsQuery,
   useFetchRandomIPgfQuestionsQuery,
   useFetchIPgfAllRandomOrderQuestionsQuery,
 } = iPgfQuestionApiSlice;

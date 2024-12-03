@@ -41,7 +41,7 @@ export const rSgfQuestionApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
-    fetch20RSgfQuestions: builder.query({
+    fetch30RSgfQuestions: builder.query({
       query: () => ({
         url: `${RSgfQuestion_URL}/first20`,
         credentials: "include",
@@ -51,8 +51,10 @@ export const rSgfQuestionApiSlice = apiSlice.injectEndpoints({
     }),
 
     fetchRandomRSgfQuestions: builder.query({
-      query: () => ({
-        url: `${RSgfQuestion_URL}/random85`,
+      query: (examSessionId) => ({
+        url: `${RSgfQuestion_URL}/random85${
+          examSessionId ? `?examSessionId=${examSessionId}` : ""
+        }`,
         credentials: "include",
       }),
       providesTags: ["RSgfQuestion"],
@@ -81,7 +83,7 @@ export const {
   useUpdateRSgfQuestionMutation,
   useDeleteRSgfQuestionMutation,
   useFetchRSgfQuestionsQuery,
-  useFetch20RSgfQuestionsQuery,
+  useFetch30RSgfQuestionsQuery,
   useFetchRandomRSgfQuestionsQuery,
   useFetchRSgfAllRandomOrderQuestionsQuery,
 } = rSgfQuestionApiSlice;

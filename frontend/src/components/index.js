@@ -8,6 +8,7 @@ import PricingPage from "./PricingPage/PricingPage";
 import PrivateRoute from "./PrivateRoute/PrivateRoute";
 import Sidebar from "./Sidebar/Sidebar";
 import Navbar from "./Navbar/Navbar";
+import AdminRoute from "./Admin/AdminRoute";
 
 export {
   AlternateComponent,
@@ -20,4 +21,5 @@ export {
   PrivateRoute,
   Sidebar,
   Navbar,
+  AdminRoute,
 };

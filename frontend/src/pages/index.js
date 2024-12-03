@@ -6,9 +6,13 @@ import Revision from "./Revision/Revision";
 import SubjectDrills from "./Subject/SubjectDrills";
 import Subject from "./Subject/Subject";
 import SubjectQuiz from "./Subject/SubjectQuiz";
+import SubjectQuizFree from "./Subject/SubjectQuizFree";
 import ExamDrills from "./Exam/ExamDrills";
+import Exam from "./Exam/Exam";
 import Premium from "./Premium/Premium";
 import TutorForm from "./TutorForm/TutorForm";
+import AdminDashboard from "./Admin/AdminDashboard";
+import UsersList from "./Admin/UsersList";
 
 export {
   Home,
@@ -19,7 +23,11 @@ export {
   SubjectDrills,
   Subject,
   SubjectQuiz,
+  SubjectQuizFree,
   ExamDrills,
+  Exam,
   Premium,
   TutorForm,
+  AdminDashboard,
+  UsersList,
 };

@@ -1,36 +1,28 @@
-import { MentorSection, Logo } from "../../components";
-import { useGoogleLogin } from "@react-oauth/google";
 import { Link } from "react-router-dom";
-import { useUser } from "../../context/UserContext";
-import { BASE_URL } from "../../utils/constants";
+import { useDispatch } from "react-redux";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useLoginMutation } from "../../redux/api/usersApiSlice";
+import { MentorSection, Logo } from "../../components";
+// import { useUser } from "../../context/UserContext";
+import { setCredentials } from "../../redux/features/authSlice";
 
 function Home() {
-  const { setUserInfo } = useUser();
+  // const { setUserInfo } = useUser();
+
+  const dispatch = useDispatch();
+
+  const [login, { isLoading }] = useLoginMutation();
 
   const responseGoogle = async (authResult) => {
     try {
       if (authResult?.code) {
-        const response = await fetch(
-          `${BASE_URL}/api/auth/google?code=${authResult.code}`,
-          {
-            method: "POST",
-            credentials: "include",
-          }
-        );
+        const res = await login(authResult.code).unwrap();
+        dispatch(setCredentials({ ...res }));
+        // const userObj = { ...response };
+        // setUserInfo(userObj);
 
-        if (!response.ok) {
-          throw new Error("Failed to authenticate with Google");
-        }
-
-        const result = await response.json();
-
-        const { _id, name, email, image, token } = result;
-
-        const userObj = { _id, name, email, image, token };
-        setUserInfo(userObj);
-
-        // Use secure storage for sensitive information.
-        localStorage.setItem("user-info", JSON.stringify(userObj));
+        // // Use secure storage for sensitive information.
+        // localStorage.setItem("user-info", JSON.stringify(userObj));
       } else {
         console.error("No authorization code received", authResult);
         throw new Error("No authorization code received");
@@ -45,6 +37,13 @@ function Home() {
     onError: (error) => console.error("Google Login Error:", error),
     flow: "auth-code",
   });
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen w-full bg-[#0A3C4B] text-white">
+        Loading...
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-[#0A3C4B]">

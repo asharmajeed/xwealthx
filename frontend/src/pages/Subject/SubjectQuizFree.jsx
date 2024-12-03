@@ -1,24 +1,21 @@
 import { useState, useEffect } from "react";
-import MCQ from "./MCQ";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import MCQ from "../Quiz/MCQ";
 import { useFetch30GPQuestionsQuery as fetchGPQuestions } from "../../redux/api/gPQuestionApiSlice";
-// import { useFetchGPgfQuestionsQuery as fetchGPgfQuestions } from "../../redux/api/gPgfQuestionApiSlice";
 import { useFetch30RMQuestionsQuery as fetchRMQuestions } from "../../redux/api/rMQuestionApiSlice";
 import { useFetch30IPQuestionsQuery as fetchIPQuestions } from "../../redux/api/iPQuestionApiSlice";
 import { useFetch30TPQuestionsQuery as fetchTPQuestions } from "../../redux/api/tPQuestionApiSlice";
 import { useFetch30RSQuestionsQuery as fetchRSQuestions } from "../../redux/api/rSQuestionApiSlice";
 import { useFetch30EPQuestionsQuery as fetchEPQuestions } from "../../redux/api/ePQuestionApiSlice";
 
-const Quiz = () => {
+const SubjectQuizFree = () => {
+  const { userInfo } = useSelector((state) => state.auth);
+
   const { subjectName } = useParams();
   const subject = decodeURIComponent(subjectName);
   const navigate = useNavigate();
-  const storageKey = `quizProgress_${subject}`;
-
-  // const [quizSessionId, setQuizSessionId] = useState(() => {
-  //   // Get quizSessionId from localStorage if it exists
-  //   return localStorage.getItem("quizSessionId");
-  // });
+  const storageKey = `SubjectQuizFreeProgress_${subject}`;
 
   // Initialize states from localStorage or use defaults
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
@@ -45,8 +42,6 @@ const Quiz = () => {
     isLoading: loadingGP,
     error: errorGP,
   } = fetchGPQuestions();
-  // const { data: GPQuestions = [], isLoading: loadingGP, error: errorGP } = fetchGPQuestions()
-  // const { data: GPgfQuestions = [], isLoading: loadingGPgf, error: errorGPgf } = fetchGPgfQuestions()
   const {
     data: RMQuestions,
     isLoading: loadingRM,
@@ -73,13 +68,6 @@ const Quiz = () => {
     error: errorEP,
   } = fetchEPQuestions();
 
-  // Ensure each data is an array, use fallback if undefined or null
-  // const mergedGPQuestions = Array.isArray(GPQuestions) ? GPQuestions : [];
-  // const mergedGPgfQuestions = Array.isArray(GPgfQuestions) ? GPgfQuestions : [];
-
-  // Merge the question arrays for each subject
-  // const allGPQuestions = [...mergedGPQuestions, ...mergedGPgfQuestions];
-
   const getQuestionsForSubject = () => {
     switch (subject) {
       case "General Principles of Financial Planning":
@@ -100,17 +88,6 @@ const Quiz = () => {
   };
 
   const questions = getQuestionsForSubject();
-
-  // useEffect(() => {
-  //   if (
-  //     GPQuestions?.quizSessionId &&
-  //     GPQuestions.quizSessionId !== quizSessionId
-  //   ) {
-  //     // Save new session ID to state and localStorage
-  //     setQuizSessionId(GPQuestions.quizSessionId);
-  //     localStorage.setItem("quizSessionId", GPQuestions.quizSessionId);
-  //   }
-  // }, [GPQuestions, quizSessionId]);
 
   // Save progress to localStorage whenever states change
   useEffect(() => {
@@ -186,9 +163,6 @@ const Quiz = () => {
   };
 
   const handleFinishQuiz = () => {
-    // setQuizSessionId(null);
-    // localStorage.removeItem("quizSessionId");
-
     // Clear progress for this subject
     localStorage.removeItem(storageKey);
     localStorage.removeItem(`${subject}_quiz_lastVisitedTime`);
@@ -240,6 +214,14 @@ const Quiz = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gray-100">
+      {!userInfo?.isPremium && (
+        <h2 className="font-bold text-blue-900 text-center pb-3">
+          Free access is limited.{" "}
+          <Link to="/premium" className="text-pink-500 underline">
+            Upgrade to Premium
+          </Link>
+        </h2>
+      )}
       <h2 className="text-2xl mb-4">
         {subject} - Question {currentQuestionIndex + 1}/{questions?.length}
         <pre className="text-base pt-2 text-wrap">
@@ -318,4 +300,4 @@ const Quiz = () => {
   );
 };
 
-export default Quiz;
+export default SubjectQuizFree;

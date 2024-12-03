@@ -1,11 +1,14 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { useUser } from "./context/UserContext";
 import { useState, useMemo } from "react";
 import { Navbar, Sidebar } from "./components";
+import { useSelector } from "react-redux";
+import useSocketListener from "./socket/useSocketListener";
 
 function App() {
+  useSocketListener();
+
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const { userInfo } = useUser();
+  const { userInfo } = useSelector((state) => state.auth);
   const location = useLocation(); // Get the current URL path
 
   // Define pages that should use fixed layout (with navbar and sidebar)
@@ -21,6 +24,7 @@ function App() {
       "/revision-drills",
       "/exam-drills",
       "/premium",
+      "/admin-dashboard",
     ];
     if (userInfo) {
       paths.push("/");

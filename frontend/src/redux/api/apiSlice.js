@@ -18,6 +18,7 @@ export const apiSlice = createApi({
     "TPgfQuestion",
     "RSgfQuestion",
     "EPgfQuestion",
+    "User",
   ],
   endpoints: () => ({}),
 });

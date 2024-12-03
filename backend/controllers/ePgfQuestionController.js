@@ -1,6 +1,6 @@
 import { EPgfQuestion } from "../models/questionModel.js";
 import { v4 as uuidv4 } from "uuid"; // Import UUID generator
-import { setQuizSession, getQuizSession } from "../utils/cacheHelpers.js";
+import { setQuizSession, getQuizSession, setExamSession, getExamSession } from "../utils/cacheHelpers.js";
 
 export const addQuestion = async (req, res) => {
   try {
@@ -49,9 +49,9 @@ export const getAllQuestions = async (req, res) => {
   }
 };
 
-export const getFirst20Questions = async (req, res) => {
+export const getFirst30Questions = async (req, res) => {
   try {
-    const questions = await EPgfQuestion.find().limit(20);
+    const questions = await EPgfQuestion.find().limit(30);
     res.status(200).json(questions);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -60,10 +60,32 @@ export const getFirst20Questions = async (req, res) => {
 
 export const getRandom85Questions = async (req, res) => {
   try {
+    const { examSessionId } = req.query;
+
+    // Check if session data exists in Redis
+    if (examSessionId) {
+      const cachedQuestions = await getExamSession(examSessionId);
+      if (cachedQuestions) {
+        return res
+          .status(200)
+          .json({ examSessionId, questions: cachedQuestions });
+      }
+    }
+
+    // Fetch random questions using MongoDB aggregation
     const questions = await EPgfQuestion.aggregate([{ $sample: { size: 85 } }]);
-    res.status(200).json(questions);
+
+    // Generate a new quiz session ID
+    const newExamSessionId = uuidv4();
+
+    // Store questions in Redis with expiration
+    await setExamSession(newExamSessionId, questions);
+
+    // Respond with the new quiz session ID and questions
+    res.status(200).json({ examSessionId: newExamSessionId, questions });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching questions:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -80,13 +102,17 @@ export const getAllQuestionsRandomOrder = async (req, res) => {
     if (quizSessionId) {
       const cachedQuestions = await getQuizSession(quizSessionId);
       if (cachedQuestions) {
-        return res.status(200).json({ quizSessionId, questions: cachedQuestions });
+        return res
+          .status(200)
+          .json({ quizSessionId, questions: cachedQuestions });
       }
     }
 
     // Fetch random questions using MongoDB aggregation
     const totalQuestions = await EPgfQuestion.countDocuments();
-    const questions = await EPgfQuestion.aggregate([{ $sample: { size: totalQuestions } }]);
+    const questions = await EPgfQuestion.aggregate([
+      { $sample: { size: totalQuestions } },
+    ]);
 
     // Generate a new quiz session ID
     const newQuizSessionId = uuidv4();

@@ -1,6 +1,8 @@
 import User from "../models/userModel.js";
 import { oauth2Client } from "../utils/googleClient.js";
 import generateToken from "../utils/createToken.js";
+import { io } from "../index.js";
+import { emitUserUpdate } from "../socket/sockets.js";
 
 /* GET Google Authentication API. */
 export const googleAuth = async (req, res) => {
@@ -34,6 +36,9 @@ export const googleAuth = async (req, res) => {
       name: user.name,
       email: user.email,
       image: user.image,
+      isAdmin: user.isAdmin,
+      isPremium: user.isPremium,
+      plan: user.plan,
       token,
     });
   } catch (err) {
@@ -46,4 +51,66 @@ export const googleAuth = async (req, res) => {
 export const logoutUser = async (req, res) => {
   res.cookie("jwt", "", { maxAge: 0 });
   res.status(200).json({ message: "Logged Out Successfully" });
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const deleteUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      if (user.isAdmin) {
+        return res.status(400).json({ message: "Cannot delete admin" });
+      }
+      await User.deleteOne({ _id: user._id });
+      res.status(200).json({ message: "User removed" });
+    } else {
+      return res.status(400).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const updateUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      user.plan = req.body.plan || user.plan;
+
+      if (user.plan !== "$0") {
+        user.isPremium = true;
+      } else {
+        user.isPremium = false;
+      }
+
+      const updatedUser = await user.save();
+
+      // Emit the update to the specific user
+      emitUserUpdate(io, updatedUser._id, updatedUser);
+
+      res.status(200).json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        image: updatedUser.image,
+        isAdmin: updatedUser.isAdmin,
+        isPremium: updatedUser.isPremium,
+        plan: updatedUser.plan,
+      });
+    } else {
+      return res.status(400).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };

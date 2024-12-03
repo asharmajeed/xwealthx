@@ -41,7 +41,7 @@ export const tPgfQuestionApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
-    fetch20TPgfQuestions: builder.query({
+    fetch30TPgfQuestions: builder.query({
       query: () => ({
         url: `${TPgfQuestion_URL}/first20`,
         credentials: "include",
@@ -51,8 +51,10 @@ export const tPgfQuestionApiSlice = apiSlice.injectEndpoints({
     }),
 
     fetchRandomTPgfQuestions: builder.query({
-      query: () => ({
-        url: `${TPgfQuestion_URL}/random85`,
+      query: (examSessionId) => ({
+        url: `${TPgfQuestion_URL}/random85${
+          examSessionId ? `?examSessionId=${examSessionId}` : ""
+        }`,
         credentials: "include",
       }),
       providesTags: ["TPgfQuestion"],
@@ -81,7 +83,7 @@ export const {
   useUpdateTPgfQuestionMutation,
   useDeleteTPgfQuestionMutation,
   useFetchTPgfQuestionsQuery,
-  useFetch20TPgfQuestionsQuery,
+  useFetch30TPgfQuestionsQuery,
   useFetchRandomTPgfQuestionsQuery,
   useFetchTPgfAllRandomOrderQuestionsQuery,
 } = tPgfQuestionApiSlice;

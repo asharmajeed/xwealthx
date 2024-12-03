@@ -41,7 +41,7 @@ export const tPQuestionApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
-    fetch20TPQuestions: builder.query({
+    fetch30TPQuestions: builder.query({
       query: () => ({
         url: `${TPQuestion_URL}/first20`,
         credentials: "include",
@@ -81,7 +81,7 @@ export const {
   useUpdateTPQuestionMutation,
   useDeleteTPQuestionMutation,
   useFetchTPQuestionsQuery,
-  useFetch20TPQuestionsQuery,
+  useFetch30TPQuestionsQuery,
   useFetchRandomTPQuestionsQuery,
   useFetchTPAllRandomOrderQuestionsQuery,
 } = tPQuestionApiSlice;

@@ -41,7 +41,7 @@ export const iPQuestionApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
-    fetch20IPQuestions: builder.query({
+    fetch30IPQuestions: builder.query({
       query: () => ({
         url: `${IPQuestion_URL}/first20`,
         credentials: "include",
@@ -81,7 +81,7 @@ export const {
   useUpdateIPQuestionMutation,
   useDeleteIPQuestionMutation,
   useFetchIPQuestionsQuery,
-  useFetch20IPQuestionsQuery,
+  useFetch30IPQuestionsQuery,
   useFetchRandomIPQuestionsQuery,
   useFetchIPAllRandomOrderQuestionsQuery
 } = iPQuestionApiSlice;

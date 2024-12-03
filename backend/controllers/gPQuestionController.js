@@ -49,9 +49,9 @@ export const getAllQuestions = async (req, res) => {
   }
 };
 
-export const getFirst20Questions = async (req, res) => {
+export const getFirst30Questions = async (req, res) => {
   try {
-    const questions = await GPQuestion.find().limit(20);
+    const questions = await GPQuestion.find().limit(30);
     res.status(200).json(questions);
   } catch (error) {
     res.status(500).json({ error: error.message });

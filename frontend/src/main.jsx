@@ -10,11 +10,13 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./index.css";
 
 // Context and Components
-import { UserProvider, useUser } from "./context/UserContext.jsx";
+import { UserProvider } from "./context/UserContext.jsx";
 import { SubjectProvider } from "./context/QuizContext.jsx";
 import store from "./redux/store.js";
 import App from "./App.jsx";
 import {
+  AdminDashboard,
+  Exam,
   ExamDrills,
   Home,
   Premium,
@@ -24,10 +26,11 @@ import {
   Subject,
   SubjectDrills,
   SubjectQuiz,
+  SubjectQuizFree,
   TutorForm,
 } from "./pages";
-import { PrivateRoute, ConsultationForm } from "./components";
-import { Provider } from "react-redux";
+import { PrivateRoute, ConsultationForm, AdminRoute } from "./components";
+import { Provider, useSelector } from "react-redux";
 import EPQuiz from "./pages/Quiz/EPQuiz.jsx";
 import HomeLoggedIn from "./pages/Home/HomeLoggedIn.jsx";
 
@@ -40,10 +43,13 @@ const GoogleWrapper = () => (
 
 // Dynamic Home component
 const DynamicHome = () => {
-  const { userInfo } = useUser(); // Check login status from context
-
-  // Render StudentDashboard if logged in, otherwise render GoogleWrapper
+  const { userInfo } = useSelector((state) => state.auth);
   return userInfo ? <HomeLoggedIn /> : <GoogleWrapper />;
+};
+
+const DynamicSubjectQuiz = () => {
+  const { userInfo } = useSelector((state) => state.auth);
+  return userInfo && userInfo.isPremium ? <SubjectQuiz /> : <SubjectQuizFree />;
 };
 
 const router = createBrowserRouter(
@@ -64,9 +70,15 @@ const router = createBrowserRouter(
         <Route path="/revision-drills" element={<RevisionDrills />} />
         <Route path="/subject-drills" element={<SubjectDrills />} />
         <Route path="/subject-drills/:subjectName" element={<Subject />} />
-        <Route path="/subject-quiz/:subjectName" element={<SubjectQuiz />} />
+        <Route path="/subject-quiz/:subjectName" element={<DynamicSubjectQuiz />} />
         <Route path="/exam-drills" element={<ExamDrills />} />
+        <Route path="/exam/:subjectName" element={<Exam />} />
         <Route path="/premium" element={<Premium />} />
+      </Route>
+
+      {/* Admin Routes */}
+      <Route element={<AdminRoute />}>
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Route>
     </Route>
   )

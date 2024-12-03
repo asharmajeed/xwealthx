@@ -41,7 +41,7 @@ export const ePQuestionApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
-    fetch20EPQuestions: builder.query({
+    fetch30EPQuestions: builder.query({
       query: () => ({
         url: `/api/quiz-data/ep-questions/first20`,
         credentials: "include",
@@ -81,7 +81,7 @@ export const {
   useUpdateEPQuestionMutation,
   useDeleteEPQuestionMutation,
   useFetchEPQuestionsQuery,
-  useFetch20EPQuestionsQuery,
+  useFetch30EPQuestionsQuery,
   useFetchRandomEPQuestionsQuery,
   useFetchEPAllRandomOrderQuestionsQuery,
 } = ePQuestionApiSlice;

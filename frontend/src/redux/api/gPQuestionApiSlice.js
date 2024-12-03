@@ -41,7 +41,7 @@ export const gPQuestionApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
-    fetch20GPQuestions: builder.query({
+    fetch30GPQuestions: builder.query({
       query: () => ({
         url: `${GPQuestion_URL}/first20`,
         credentials: "include",
@@ -65,7 +65,7 @@ export const gPQuestionApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
-    fetchRandom20GPQuestions: builder.query({
+    fetchRandom30GPQuestions: builder.query({
       query: (quizSessionId) => ({
         url: `${GPQuestion_URL}/random20${
           quizSessionId ? `?quizSessionId=${quizSessionId}` : ""
@@ -102,8 +102,8 @@ export const {
   useUpdateGPQuestionMutation,
   useDeleteGPQuestionMutation,
   useFetchGPQuestionsQuery,
-  useFetch20GPQuestionsQuery,
+  useFetch30GPQuestionsQuery,
   useFetchRandomGPQuestionsQuery,
-  useFetchRandom20GPQuestionsQuery,
+  useFetchRandom30GPQuestionsQuery,
   useFetchGPAllRandomOrderQuestionsQuery,
 } = gPQuestionApiSlice;

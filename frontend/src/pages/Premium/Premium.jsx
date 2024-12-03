@@ -1,29 +1,113 @@
+import { useState } from "react";
+
 const Premium = () => {
   const pricingPlans = [
-    { title: "2 Week Exam Cram", price: "$49" },
-    { title: "1 Month Exam Drills", price: "$99" },
-    { title: "2 Months Exam Drills", price: "$199 (Save 10%)" },
-    { title: "3 Months Focused Practice", price: "$250 (Save 15%)" },
-    { title: "5 Months Strategic Practice", price: "$350 (Save 25%)" },
-    { title: "6 Months Ultimate Prep", price: "$400 (Save 30%)" },
+    { title: "2 Week Exam Cram", price: "$49", plan: "$49" },
+    { title: "1 Month Exam Drills", price: "$99", plan: "$99" },
+    { title: "2 Months Exam Drills", price: "$199 (Save 10%)", plan: "$199" },
+    {
+      title: "3 Months Focused Practice",
+      price: "$250 (Save 15%)",
+      plan: "$250",
+    },
+    {
+      title: "5 Months Strategic Practice",
+      price: "$350 (Save 25%)",
+      plan: "$350",
+    },
+    { title: "6 Months Ultimate Prep", price: "$400 (Save 30%)", plan: "$400" },
   ];
+
+  const [showForm, setShowForm] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [plan, setPlan] = useState("");
+
+  const handlePlanClick = async (plan) => {
+    setShowForm(true);
+    setPlan(plan);
+  };
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold text-blue-900 mb-4">
-        CFP® Exam Prep Membership Benefits
-      </h2>
-      <div className="space-y-4">
-        {pricingPlans.map((plan, index) => (
-          <a
-            key={index}
-            className="p-4 border rounded flex justify-between items-center cursor-pointer hover:scale-[1.02] transition-transform"
+      {showForm ? (
+        <>
+          <h2 className="text-2xl font-bold text-blue-900 text-center pb-3">
+            Upgrade to Premium?
+          </h2>
+          <div className="bg-gray-100 flex items-center justify-center">
+            <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+              <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                Request Invoice
+              </h1>
+              <form className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-600"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-pink-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="plan"
+                    className="block text-sm font-medium text-gray-600"
+                  >
+                    Plan Name
+                  </label>
+                  <input
+                    id="plan"
+                    type="text"
+                    placeholder="Enter plan name"
+                    value={plan}
+                    readOnly
+                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-pink-500 focus:outline-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-pink-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-pink-700 focus:ring-2 focus:ring-pink-500 focus:outline-none"
+                >
+                  Request Invoice
+                </button>
+              </form>
+            </div>
+          </div>
+          <h1
+            onClick={() => setShowForm(false)}
+            className="text-pink-500 underline text-center cursor-pointer pt-2"
           >
-            <span className="text-gray-800">{plan.title}</span>
-            <span className="text-teal font-semibold">{plan.price}</span>
-          </a>
-        ))}
-      </div>
+            Go back to Plans
+          </h1>
+        </>
+      ) : (
+        <>
+          <h2 className="text-2xl font-bold text-blue-900 mb-4">
+            CFP® Exam Prep Membership Benefits
+          </h2>
+          <div className="space-y-4">
+            {pricingPlans.map((plan, index) => (
+              <div
+                key={index}
+                className="p-4 border rounded flex justify-between items-center cursor-pointer hover:scale-[1.02] transition-transform"
+                onClick={() => handlePlanClick(plan.plan)}
+              >
+                <span className="text-gray-800">{plan.title}</span>
+                <span className="text-teal font-semibold">{plan.price}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

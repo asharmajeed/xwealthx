@@ -13,6 +13,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isAdmin: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  isPremium: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  plan: {
+    type: String,
+    required: true,
+    default: "$0",
+  },
 });
 
 const User = mongoose.model("User", userSchema);

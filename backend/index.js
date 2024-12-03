@@ -1,8 +1,11 @@
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import "dotenv/config";
 import connectDB from "./config/db.js";
+import { handleSockets } from "./socket/sockets.js";
 import userRoutes from "./routes/userRoutes.js";
 import gPQuestionRoutes from "./routes/gPQuestionRoutes.js";
 import rMQuestionRoutes from "./routes/rMQuestionRoutes.js";
@@ -21,6 +24,7 @@ connectDB();
 const PORT = process.env.PORT || 5000;
 
 const app = express();
+const server = http.createServer(app);
 
 app.use(express.json());
 app.use(
@@ -30,6 +34,15 @@ app.use(
   })
 );
 app.use(cookieParser());
+
+const io = new Server(server, {
+  cors: {
+    origin: "https://xwealthx-8dga.vercel.app", // Frontend origin
+    methods: ["GET", "POST"],
+  },
+});
+
+handleSockets(io);
 
 app.use("/api/auth", userRoutes);
 // subject wise question routes
@@ -51,6 +64,12 @@ app.all("*", (req, res) => {
   res.status(404).send("Page not found");
 });
 
-app.listen(PORT, () => {
+// app.listen(PORT, () => {
+//   console.log(`Server is running on ${PORT}`);
+// });
+
+server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
+
+export { io };

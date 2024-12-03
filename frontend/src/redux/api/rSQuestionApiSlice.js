@@ -41,7 +41,7 @@ export const rSQuestionApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
 
-    fetch20RSQuestions: builder.query({
+    fetch30RSQuestions: builder.query({
       query: () => ({
         url: `${RSQuestion_URL}/first20`,
         credentials: "include",
@@ -81,7 +81,7 @@ export const {
   useUpdateRSQuestionMutation,
   useDeleteRSQuestionMutation,
   useFetchRSQuestionsQuery,
-  useFetch20RSQuestionsQuery,
+  useFetch30RSQuestionsQuery,
   useFetchRandomRSQuestionsQuery,
   useFetchRSAllRandomOrderQuestionsQuery,
 } = rSQuestionApiSlice;
