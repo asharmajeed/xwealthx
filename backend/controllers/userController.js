@@ -1,8 +1,6 @@
 import User from "../models/userModel.js";
 import { oauth2Client } from "../utils/googleClient.js";
 import generateToken from "../utils/createToken.js";
-import { io } from "../index.js";
-import { emitUserUpdate } from "../socket/sockets.js";
 
 /* GET Google Authentication API. */
 export const googleAuth = async (req, res) => {
@@ -53,6 +51,28 @@ export const logoutUser = async (req, res) => {
   res.status(200).json({ message: "Logged Out Successfully" });
 };
 
+export const getCurrentUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+      isAdmin: user.isAdmin,
+      isPremium: user.isPremium,
+      plan: user.plan,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({});
@@ -94,9 +114,6 @@ export const updateUserById = async (req, res) => {
       }
 
       const updatedUser = await user.save();
-
-      // Emit the update to the specific user
-      emitUserUpdate(io, updatedUser._id, updatedUser);
 
       res.status(200).json({
         _id: updatedUser._id,

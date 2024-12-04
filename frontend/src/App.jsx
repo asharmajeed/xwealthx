@@ -1,14 +1,30 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Navbar, Sidebar } from "./components";
-import { useSelector } from "react-redux";
-import useSocketListener from "./socket/useSocketListener";
+import { useDispatch, useSelector } from "react-redux";
+import { useGetCurrentUserQuery } from "./redux/api/usersApiSlice";
+import { setCredentials } from "./redux/features/authSlice";
 
 function App() {
-  useSocketListener();
-
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.auth);
+
+  // Conditionally trigger the getCurrentUser query only if the user is logged in
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useGetCurrentUserQuery(null, {
+    skip: !userInfo, // Skip the query if user is not logged in
+  });
+
+  useEffect(() => {
+    if (user) {
+      dispatch(setCredentials({ ...userInfo, ...user })); // Set user info in global state if data is fetched
+    }
+  }, [user, dispatch]);
+
   const location = useLocation(); // Get the current URL path
 
   // Define pages that should use fixed layout (with navbar and sidebar)
@@ -35,6 +51,19 @@ function App() {
   const isFixedLayout = fixedLayoutPaths.includes(location.pathname);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen w-full">
+        Loading...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-screen w-full">
+        Error loading questions
+      </div>
+    );
 
   // Render Fixed Layout with Navbar and Sidebar
   if (isFixedLayout) {

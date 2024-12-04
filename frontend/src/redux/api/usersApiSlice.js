@@ -1,7 +1,6 @@
 import { apiSlice } from "./apiSlice";
 import { USERS_URL } from "../../utils/constants";
 import { setCredentials } from "../features/authSlice";
-import socket from "../../socket/socket";
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,6 +18,29 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         credentials: "include",
       }),
+    }),
+
+    getCurrentUser: builder.query({
+      query: () => ({
+        url: USERS_URL,
+        credentials: "include",
+      }),
+      providesTags: ["User"],
+      keepUnusedDataFor: 5,
+      onQueryStarted: async (arg, { dispatch, getState, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled; // Get user data from the fulfilled query
+          const currentState = getState().auth.userInfo; // Get the current user info from global state
+
+          // Merge the previous state with the new data if the user exists
+          if (currentState) {
+            const mergedData = { ...currentState, ...data }; // Merge logic
+            dispatch(setCredentials(mergedData)); // Dispatch the updated user data to Redux state
+          }
+        } catch (error) {
+          console.error("Error fetching current user:", error);
+        }
+      },
     }),
 
     // ADMIN ROUTES
@@ -48,18 +70,6 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
       invalidatesTags: ["User"],
-      async onQueryStarted(arg, { dispatch, getState, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          const currentState = getState().auth.userInfo;
-          if (currentState?._id === data._id) {
-            dispatch(setCredentials({ ...data, token: currentState.token }));
-          } // Update Redux state
-          socket.emit("userUpdated", data); // Emit WebSocket event
-        } catch (error) {
-          console.error("Error updating user:", error);
-        }
-      },
     }),
   }),
 });
@@ -67,6 +77,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
 export const {
   useLoginMutation,
   useLogoutMutation,
+  useGetCurrentUserQuery,
   useGetUsersQuery,
   useDeleteUserMutation,
   useUpdateUserMutation,

@@ -2,6 +2,7 @@ import express from "express";
 import {
   deleteUserById,
   getAllUsers,
+  getCurrentUserProfile,
   googleAuth,
   logoutUser,
   updateUserById,
@@ -9,6 +10,8 @@ import {
 import { authorizeAdmin, verifyJWT } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+router.route("/").get(verifyJWT, getCurrentUserProfile);
 
 router.route("/google").post(googleAuth);
 router.route("/logout").post(verifyJWT, logoutUser);
