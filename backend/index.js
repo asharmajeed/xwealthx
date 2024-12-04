@@ -74,8 +74,11 @@ app.all("*", (req, res) => {
 
 export { io };
 
-// Export a function that Vercel can use to handle requests
+// Vercel-specific handler
 export default function handler(req, res) {
-  io.engine.handleRequest(req, res);
-  app(req, res); // Let Express handle the request
+  if (req.url.startsWith("/socket.io")) {
+    io.engine.handleRequest(req, res); // Forward WebSocket requests to Socket.IO
+  } else {
+    app(req, res); // Forward HTTP requests to Express
+  }
 }
