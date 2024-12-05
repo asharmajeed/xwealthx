@@ -1,55 +1,13 @@
-// import { useDispatch, useSelector } from "react-redux";
 import { useSubject } from "../../context/QuizContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { useGetCurrentUserQuery } from "../../redux/api/usersApiSlice";
-// import { setCredentials } from "../../redux/features/authSlice";
-// import { useEffect } from "react";
 
 const HomeLoggedIn = () => {
-  // const { userInfo } = useSelector((state) => state.auth);
-  // const dispatch = useDispatch();
-
-  // const {
-  //   data: currentUserInfo,
-  //   isLoading,
-  //   isError,
-  //   refetch,
-  // } = useGetCurrentUserQuery();
-
   const location = useLocation();
   const score = location.state?.score || 0;
   const total = location.state?.total || 0;
 
   const { setSubject } = useSubject();
   const navigate = useNavigate();
-
-  // Refetch user info only when necessary (if not available or if there's an error)
-  // useEffect(() => {
-  //   if (!currentUserInfo && !isLoading && !isError) {
-  //     refetch();
-  //   }
-  // }, [currentUserInfo, isLoading, isError, refetch]);
-
-  // // Dispatch the user credentials when currentUserInfo is available
-  // useEffect(() => {
-  //   if (currentUserInfo) {
-  //     dispatch(setCredentials({ ...userInfo, ...currentUserInfo }));
-  //   }
-  // }, [currentUserInfo, dispatch, userInfo]);
-
-  // Conditional loading and error handling
-  // if (isLoading)
-  //   return (
-  //     <div className="flex justify-center items-center h-screen w-full">
-  //       Loading...
-  //     </div>
-  //   );
-  // if (isError)
-  //   return (
-  //     <div className="flex justify-center items-center h-screen w-full">
-  //       Error loading user
-  //     </div>
-  //   );
 
   // Handle subject clicks
   const handleSubjectClick = (subject) => {

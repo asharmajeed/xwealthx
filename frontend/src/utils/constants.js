@@ -1,5 +1,6 @@
 export const BASE_URL = "https://xwealthx.vercel.app";
 export const USERS_URL = "/api/auth";
+export const SUBJECTS_URL = "/api/questions";
 export const GPQuestion_URL = "/api/quiz-data/gp-questions";
 export const RMQuestion_URL = "/api/quiz-data/rm-questions";
 export const IPQuestion_URL = "/api/quiz-data/ip-questions";

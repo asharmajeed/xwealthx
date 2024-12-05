@@ -41,6 +41,8 @@ function App() {
       "/exam-drills",
       "/premium",
       "/admin-dashboard",
+      "/admin-dashboard/manage-users",
+      "/admin-dashboard/subject-questions",
     ];
     if (userInfo) {
       paths.push("/");
@@ -61,7 +63,7 @@ function App() {
   if (error)
     return (
       <div className="flex justify-center items-center h-screen w-full">
-        Error loading questions
+        Error loading website
       </div>
     );
 

@@ -16,6 +16,7 @@ import iPgfQuestionRoutes from "./routes/iPgfQuestionRoutes.js";
 import tPgfQuestionRoutes from "./routes/tPgfQuestionRoutes.js";
 import rSgfQuestionRoutes from "./routes/rSgfQuestionRoutes.js";
 import ePgfQuestionRoutes from "./routes/ePgfQuestionRoutes.js";
+import questionRoutes from "./routes/subjectRoutes.js"
 
 connectDB();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +33,8 @@ app.use(
 app.use(cookieParser());
 
 app.use("/api/auth", userRoutes);
+
+app.use('/api/questions', questionRoutes);
 // subject wise question routes
 app.use("/api/quiz-data/gp-questions", gPQuestionRoutes);
 app.use("/api/quiz-data/rm-questions", rMQuestionRoutes);

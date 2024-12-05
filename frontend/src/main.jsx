@@ -19,6 +19,7 @@ import {
   ExamDrills,
   Home,
   Premium,
+  QuestionsList,
   Quiz,
   Revision,
   RevisionDrills,
@@ -27,6 +28,7 @@ import {
   SubjectQuiz,
   SubjectQuizFree,
   TutorForm,
+  UsersList,
 } from "./pages";
 import { PrivateRoute, ConsultationForm, AdminRoute } from "./components";
 import { Provider, useSelector } from "react-redux";
@@ -81,6 +83,8 @@ const router = createBrowserRouter(
       {/* Admin Routes */}
       <Route element={<AdminRoute />}>
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin-dashboard/manage-users" element={<UsersList />} />
+        <Route path="/admin-dashboard/subject-questions" element={<QuestionsList />} />
       </Route>
     </Route>
   )
