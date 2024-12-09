@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://xwealthx-8dga.vercel.app",
+    origin: ["https://xwealthx-8dga.vercel.app", "https://xwealthx-2ayz.vercel.app"],
     credentials: true,
   })
 );
