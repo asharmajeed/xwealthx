@@ -1,5 +1,4 @@
 import Home from "./Home/Home";
-import StudentDashboard from "./StudentDashboard/StudentDashboard";
 import Quiz from "./Quiz/Quiz";
 import RevisionDrills from "./Revision/RevisionDrills";
 import Revision from "./Revision/Revision";
@@ -17,7 +16,6 @@ import QuestionsList from "./Admin/QuestionsList";
 
 export {
   Home,
-  StudentDashboard,
   Quiz,
   RevisionDrills,
   Revision,

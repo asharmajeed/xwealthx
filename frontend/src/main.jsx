@@ -32,7 +32,6 @@ import {
 } from "./pages";
 import { PrivateRoute, ConsultationForm, AdminRoute } from "./components";
 import { Provider, useSelector } from "react-redux";
-import EPQuiz from "./pages/Quiz/EPQuiz.jsx";
 import HomeLoggedIn from "./pages/Home/HomeLoggedIn.jsx";
 
 // Google OAuth Wrapper
@@ -67,7 +66,6 @@ const router = createBrowserRouter(
       <Route element={<PrivateRoute />}>
         <Route path="/revision-drills/revision" element={<Revision />} />
         <Route path="/quiz/:subjectName" element={<Quiz />} />
-        <Route path="/estate-quiz" element={<EPQuiz />} />
         <Route path="/revision-drills" element={<RevisionDrills />} />
         <Route path="/subject-drills" element={<SubjectDrills />} />
         <Route path="/subject-drills/:subjectName" element={<Subject />} />

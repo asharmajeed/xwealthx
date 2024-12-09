@@ -2,196 +2,122 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import MCQ from "../Quiz/MCQ";
-import { useFetch30GPQuestionsQuery as fetchGPQuestions } from "../../redux/api/gPQuestionApiSlice";
-import { useFetch30RMQuestionsQuery as fetchRMQuestions } from "../../redux/api/rMQuestionApiSlice";
-import { useFetch30IPQuestionsQuery as fetchIPQuestions } from "../../redux/api/iPQuestionApiSlice";
-import { useFetch30TPQuestionsQuery as fetchTPQuestions } from "../../redux/api/tPQuestionApiSlice";
-import { useFetch30RSQuestionsQuery as fetchRSQuestions } from "../../redux/api/rSQuestionApiSlice";
-import { useFetch30EPQuestionsQuery as fetchEPQuestions } from "../../redux/api/ePQuestionApiSlice";
+import { useFetch30QuestionsQuery } from "../../redux/api/subjectApiSlice";
+import {
+  getSavedQuizProgress,
+  mapSubjectToPath,
+  saveQuizProgress,
+} from "../../utils";
+import { DEFAULT_TIME } from "../../constants";
 
 const SubjectQuizFree = () => {
   const { userInfo } = useSelector((state) => state.auth);
-
   const { subjectName } = useParams();
-  const subject = decodeURIComponent(subjectName);
   const navigate = useNavigate();
-  const storageKey = `SubjectQuizFreeProgress_${subject}`;
+  const subject = decodeURIComponent(subjectName);
+  const storageKey = `SubjectQuizProgress_${subject}`;
 
-  // Initialize states from localStorage or use defaults
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
-    const savedData = JSON.parse(localStorage.getItem(storageKey));
-    return savedData?.currentQuestionIndex ?? 0;
-  });
+  const savedProgress = getSavedQuizProgress(storageKey);
 
-  const [timeLeft, setTimeLeft] = useState(() => {
-    const savedData = JSON.parse(localStorage.getItem(storageKey));
-    return savedData?.timeLeft ?? 120;
-  });
-
-  const [correctAnswersCount, setCorrectAnswersCount] = useState(() => {
-    const savedData = JSON.parse(localStorage.getItem(storageKey));
-    return savedData?.correctAnswersCount ?? 0;
-  });
-
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
+    savedProgress.currentQuestionIndex
+  );
+  const [timeLeft, setTimeLeft] = useState(savedProgress.timeLeft || 120);
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(
+    savedProgress.correctAnswersCount
+  );
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Fetch data for all subjects
-  const {
-    data: GPQuestions,
-    isLoading: loadingGP,
-    error: errorGP,
-  } = fetchGPQuestions();
-  const {
-    data: RMQuestions,
-    isLoading: loadingRM,
-    error: errorRM,
-  } = fetchRMQuestions();
-  const {
-    data: IPQuestions,
-    isLoading: loadingIP,
-    error: errorIP,
-  } = fetchIPQuestions();
-  const {
-    data: TPQuestions,
-    isLoading: loadingTP,
-    error: errorTP,
-  } = fetchTPQuestions();
-  const {
-    data: RSQuestions,
-    isLoading: loadingRS,
-    error: errorRS,
-  } = fetchRSQuestions();
-  const {
-    data: EPQuestions,
-    isLoading: loadingEP,
-    error: errorEP,
-  } = fetchEPQuestions();
+  const subjectPath = mapSubjectToPath(subject);
 
-  const getQuestionsForSubject = () => {
-    switch (subject) {
-      case "General Principles of Financial Planning":
-        return GPQuestions;
-      case "Risk Management and Insurance Planning":
-        return RMQuestions;
-      case "Investment Planning":
-        return IPQuestions;
-      case "Tax Planning":
-        return TPQuestions;
-      case "Retirement Savings and Income Planning":
-        return RSQuestions;
-      case "Estate Planning":
-        return EPQuestions;
-      default:
-        return [];
-    }
-  };
+  const {
+    data: questions,
+    isLoading,
+    error,
+  } = useFetch30QuestionsQuery(subjectPath);
 
-  const questions = getQuestionsForSubject();
-
-  // Save progress to localStorage whenever states change
   useEffect(() => {
-    const progress = {
+    saveQuizProgress(storageKey, {
       currentQuestionIndex,
       timeLeft,
       correctAnswersCount,
-    };
-    localStorage.setItem(storageKey, JSON.stringify(progress));
+    });
   }, [currentQuestionIndex, timeLeft, correctAnswersCount]);
 
-  // Timer logic
   useEffect(() => {
+    if (isLoading) return;
+
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime > 0) {
-          return prevTime - 1;
-        } else {
-          handleNextQuestion(); // Move to the next question if time runs out
-          return 120; // Reset timer for next question
-        }
-      });
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : handleNextQuestion()));
     }, 1000);
 
-    return () => clearInterval(timer); // Cleanup the timer
-  }, [currentQuestionIndex]);
+    return () => clearInterval(timer);
+  }, [currentQuestionIndex, isLoading]);
 
-  // Track navigation away from the quiz page
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      localStorage.setItem(`${subject}_quiz_lastVisitedTime`, Date.now());
-    };
-
-    // Save the timestamp when navigating away
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      localStorage.setItem(`${subject}_quiz_lastVisitedTime`, Date.now()); // Also save on cleanup
-    };
-  }, []);
-
-  // Reset timer if returning after a long time
   useEffect(() => {
     const lastVisitedTime = localStorage.getItem(
       `${subject}_quiz_lastVisitedTime`
     );
     if (lastVisitedTime) {
-      const elapsedTime = (Date.now() - parseInt(lastVisitedTime, 10)) / 1000; // Convert to seconds
-      if (elapsedTime > 120) {
-        // If more than 2 minutes passed, reset timer
-        setTimeLeft(120);
-      }
+      const elapsedTime = (Date.now() - parseInt(lastVisitedTime, 10)) / 1000;
+      if (elapsedTime > DEFAULT_TIME) setTimeLeft(DEFAULT_TIME);
     }
+
+    const handleBeforeUnload = () => {
+      localStorage.setItem(`${subject}_quiz_lastVisitedTime`, Date.now());
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      localStorage.setItem(`${subject}_quiz_lastVisitedTime`, Date.now());
+    };
   }, []);
 
-  const handleAnswerSelection = (answerIndex) => {
-    setSelectedAnswer(answerIndex);
-  };
+  const handleAnswerSelection = (answerIndex) => setSelectedAnswer(answerIndex);
 
   const handleSubmit = () => {
-    if (selectedAnswer === questions[currentQuestionIndex].correctAnswerIndex) {
-      setCorrectAnswersCount((prevCount) => prevCount + 1); // Increment score for correct answer
+    if (
+      selectedAnswer === questions[currentQuestionIndex]?.correctAnswerIndex
+    ) {
+      setCorrectAnswersCount((prev) => prev + 1);
     }
-    setIsSubmitted(true); // Mark as submitted to display explanation
+    setIsSubmitted(true);
+  };
+
+  const resetQuestionState = (resetAll = false) => {
+    if (resetAll === true) {
+      setCurrentQuestionIndex(0);
+      setCorrectAnswersCount(0);
+    }
+    setSelectedAnswer(null);
+    setIsSubmitted(false);
+    setTimeLeft(DEFAULT_TIME);
+  };
+
+  const clearQuizProgress = () => {
+    localStorage.removeItem(storageKey);
+    localStorage.removeItem(`${subject}_quiz_lastVisitedTime`);
   };
 
   const handleNextQuestion = () => {
-    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    setSelectedAnswer(null);
-    setIsSubmitted(false);
-    setTimeLeft(120); // Reset timer for next question
+    setCurrentQuestionIndex((prev) => prev + 1);
+    resetQuestionState();
   };
 
   const handleFinishQuiz = () => {
-    // Clear progress for this subject
-    localStorage.removeItem(storageKey);
-    localStorage.removeItem(`${subject}_quiz_lastVisitedTime`);
-
-    // Navigate to dashboard with score
+    clearQuizProgress();
     navigate("/", {
-      state: {
-        subject: subject,
-        score: correctAnswersCount,
-        total: questions?.length,
-      },
+      state: { subject, score: correctAnswersCount, total: questions?.length },
     });
   };
 
   const handleRestartQuiz = () => {
-    // Clear progress and reset states
-    localStorage.removeItem(storageKey);
-    localStorage.removeItem(`${subject}_quiz_lastVisitedTime`);
-
-    setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
-    setIsSubmitted(false);
-    setCorrectAnswersCount(0); // Reset score
-    setTimeLeft(120); // Reset timer
+    clearQuizProgress();
+    resetQuestionState(true);
   };
-
-  const isLoading =
-    loadingGP || loadingRM || loadingIP || loadingTP || loadingRS || loadingEP;
-  const error = errorGP || errorRM || errorIP || errorTP || errorRS || errorEP;
 
   if (isLoading)
     return (
@@ -199,16 +125,18 @@ const SubjectQuizFree = () => {
         Loading...
       </div>
     );
+
   if (error)
     return (
       <div className="flex justify-center items-center h-screen w-full">
         Error loading questions
       </div>
     );
-  if (questions?.length === 0)
+
+  if (!questions?.length)
     return (
       <div className="flex justify-center items-center h-screen w-full">
-        No questions found for this subject
+        No questions found
       </div>
     );
 
@@ -222,6 +150,7 @@ const SubjectQuizFree = () => {
           </Link>
         </h2>
       )}
+
       <h2 className="text-2xl mb-4">
         {subject} - Question {currentQuestionIndex + 1}/{questions?.length}
         <pre className="text-base pt-2 text-wrap">

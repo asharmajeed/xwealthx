@@ -9,7 +9,11 @@ const CACHE_DURATION_SECONDS = 30 * 60;
  * @param {Object} value
  * @param {number} ttl
  */
-export const setQuizSession = async (key, value, ttl = CACHE_DURATION_SECONDS) => {
+export const setQuizSession = async (
+  key,
+  value,
+  ttl = CACHE_DURATION_SECONDS
+) => {
   try {
     await redisClient.set(key, JSON.stringify(value), {
       EX: ttl, // Set expiry in seconds
@@ -34,7 +38,7 @@ export const getQuizSession = async (key) => {
   }
 };
 
-const EXAM_CACHE_DURATION_SECONDS = 30 * 60;
+const EXAM_CACHE_DURATION_SECONDS = 3 * 60 * 60;
 
 /**
  * Store data in Redis with expiration.
@@ -42,7 +46,11 @@ const EXAM_CACHE_DURATION_SECONDS = 30 * 60;
  * @param {Object} value
  * @param {number} ttl
  */
-export const setExamSession = async (key, value, ttl = EXAM_CACHE_DURATION_SECONDS) => {
+export const setExamSession = async (
+  key,
+  value,
+  ttl = EXAM_CACHE_DURATION_SECONDS
+) => {
   try {
     await redisClient.set(key, JSON.stringify(value), {
       EX: ttl, // Set expiry in seconds

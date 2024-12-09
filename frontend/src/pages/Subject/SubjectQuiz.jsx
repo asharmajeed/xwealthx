@@ -1,305 +1,175 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import MCQ from "../Quiz/MCQ";
-import { useNavigate, useParams } from "react-router-dom";
-import { useFetchGPQuestionsQuery as fetchGPQuestions } from "../../redux/api/gPQuestionApiSlice";
-import { useFetchGPgfQuestionsQuery as fetchGPgfQuestions } from "../../redux/api/gPgfQuestionApiSlice";
-import { useFetchRMQuestionsQuery as fetchRMQuestions } from "../../redux/api/rMQuestionApiSlice";
-import { useFetchRMgfQuestionsQuery as fetchRMgfQuestions } from "../../redux/api/rMgfQuestionApiSlice";
-import { useFetchIPQuestionsQuery as fetchIPQuestions } from "../../redux/api/iPQuestionApiSlice";
-import { useFetchIPgfQuestionsQuery as fetchIPgfQuestions } from "../../redux/api/iPgfQuestionApiSlice";
-import { useFetchTPQuestionsQuery as fetchTPQuestions } from "../../redux/api/tPQuestionApiSlice";
-import { useFetchTPgfQuestionsQuery as fetchTPgfQuestions } from "../../redux/api/tPgfQuestionApiSlice";
-import { useFetchRSQuestionsQuery as fetchRSQuestions } from "../../redux/api/rSQuestionApiSlice";
-import { useFetchRSgfQuestionsQuery as fetchRSgfQuestions } from "../../redux/api/rSgfQuestionApiSlice";
-import { useFetchEPQuestionsQuery as fetchEPQuestions } from "../../redux/api/ePQuestionApiSlice";
-import { useFetchEPgfQuestionsQuery as fetchEPgfQuestions } from "../../redux/api/ePgfQuestionApiSlice";
+import { useFetchQuestionsBySubjectQuery } from "../../redux/api/subjectApiSlice";
+import {
+  getSavedQuizProgress,
+  saveQuizProgress,
+  mapSubjectToPath,
+} from "../../utils";
+import { DEFAULT_TIME } from "../../constants";
 
 const SubjectQuiz = () => {
+  const { userInfo } = useSelector((state) => state.auth);
   const { subjectName } = useParams();
-  const subject = decodeURIComponent(subjectName);
   const navigate = useNavigate();
+  const subject = decodeURIComponent(subjectName);
   const storageKey = `SubjectQuizProgress_${subject}`;
 
-  // Initialize states from localStorage or use defaults
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
-    const savedData = JSON.parse(localStorage.getItem(storageKey));
-    return savedData?.currentQuestionIndex ?? 0;
-  });
+  const savedProgress = getSavedQuizProgress(storageKey);
 
-  const [timeLeft, setTimeLeft] = useState(() => {
-    const savedData = JSON.parse(localStorage.getItem(storageKey));
-    return savedData?.timeLeft ?? 120;
-  });
-
-  const [correctAnswersCount, setCorrectAnswersCount] = useState(() => {
-    const savedData = JSON.parse(localStorage.getItem(storageKey));
-    return savedData?.correctAnswersCount ?? 0;
-  });
-
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
+    savedProgress.currentQuestionIndex
+  );
+  const [timeLeft, setTimeLeft] = useState(savedProgress.timeLeft || 120);
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(
+    savedProgress.correctAnswersCount
+  );
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Fetch data for all subjects
-  const {
-    data: GPQuestions = [],
-    isLoading: loadingGP,
-    error: errorGP,
-  } = fetchGPQuestions();
-  const {
-    data: GPgfQuestions = [],
-    isLoading: loadingGPgf,
-    error: errorGPgf,
-  } = fetchGPgfQuestions();
-  const {
-    data: RMQuestions = [],
-    isLoading: loadingRM,
-    error: errorRM,
-  } = fetchRMQuestions();
-  const {
-    data: RMgfQuestions = [],
-    isLoading: loadingRMgf,
-    error: errorRMgf,
-  } = fetchRMgfQuestions();
-  const {
-    data: IPQuestions = [],
-    isLoading: loadingIP,
-    error: errorIP,
-  } = fetchIPQuestions();
-  const {
-    data: IPgfQuestions = [],
-    isLoading: loadingIPgf,
-    error: errorIPgf,
-  } = fetchIPgfQuestions();
-  const {
-    data: TPQuestions = [],
-    isLoading: loadingTP,
-    error: errorTP,
-  } = fetchTPQuestions();
-  const {
-    data: TPgfQuestions = [],
-    isLoading: loadingTPgf,
-    error: errorTPgf,
-  } = fetchTPgfQuestions();
-  const {
-    data: RSQuestions = [],
-    isLoading: loadingRS,
-    error: errorRS,
-  } = fetchRSQuestions();
-  const {
-    data: RSgfQuestions = [],
-    isLoading: loadingRSgf,
-    error: errorRSgf,
-  } = fetchRSgfQuestions();
-  const {
-    data: EPQuestions = [],
-    isLoading: loadingEP,
-    error: errorEP,
-  } = fetchEPQuestions();
-  const {
-    data: EPgfQuestions = [],
-    isLoading: loadingEPgf,
-    error: errorEPgf,
-  } = fetchEPgfQuestions();
+  const subjectPath = mapSubjectToPath(subject);
+  const gfPath = subjectPath.replace("questions", "gfquestions");
 
-  const isLoading =
-    loadingGP ||
-    loadingRM ||
-    loadingIP ||
-    loadingTP ||
-    loadingRS ||
-    loadingEP ||
-    loadingGPgf ||
-    loadingRMgf ||
-    loadingIPgf ||
-    loadingTPgf ||
-    loadingRSgf ||
-    loadingEPgf;
-  const error =
-    errorGP ||
-    errorRM ||
-    errorIP ||
-    errorTP ||
-    errorRS ||
-    errorEP ||
-    errorGPgf ||
-    errorRMgf ||
-    errorIPgf ||
-    errorTPgf ||
-    errorRSgf ||
-    errorEPgf;
+  const {
+    data: mainQuestions,
+    isLoading: mainLoading,
+    error: mainError,
+  } = useFetchQuestionsBySubjectQuery(subjectPath);
+  const {
+    data: gfQuestions,
+    isLoading: gfLoading,
+    error: gfError,
+  } = useFetchQuestionsBySubjectQuery(gfPath);
 
-  // Ensure each data is an array, use fallback if undefined or null
-  const mergedGPQuestions = Array.isArray(GPQuestions) ? GPQuestions : [];
-  const mergedGPgfQuestions = Array.isArray(GPgfQuestions) ? GPgfQuestions : [];
-  const mergedRMQuestions = Array.isArray(RMQuestions) ? RMQuestions : [];
-  const mergedRMgfQuestions = Array.isArray(RMgfQuestions) ? RMgfQuestions : [];
-  const mergedIPQuestions = Array.isArray(IPQuestions) ? IPQuestions : [];
-  const mergedIPgfQuestions = Array.isArray(IPgfQuestions) ? IPgfQuestions : [];
-  const mergedTPQuestions = Array.isArray(TPQuestions) ? TPQuestions : [];
-  const mergedTPgfQuestions = Array.isArray(TPgfQuestions) ? TPgfQuestions : [];
-  const mergedRSQuestions = Array.isArray(RSQuestions) ? RSQuestions : [];
-  const mergedRSgfQuestions = Array.isArray(RSgfQuestions) ? RSgfQuestions : [];
-  const mergedEPQuestions = Array.isArray(EPQuestions) ? EPQuestions : [];
-  const mergedEPgfQuestions = Array.isArray(EPgfQuestions) ? EPgfQuestions : [];
-
-  // Merge the question arrays for each subject
-  const allGPQuestions = [...mergedGPQuestions, ...mergedGPgfQuestions];
-  const allRMQuestions = [...mergedRMQuestions, ...mergedRMgfQuestions];
-  const allIPQuestions = [...mergedIPQuestions, ...mergedIPgfQuestions];
-  const allTPQuestions = [...mergedTPQuestions, ...mergedTPgfQuestions];
-  const allRSQuestions = [...mergedRSQuestions, ...mergedRSgfQuestions];
-  const allEPQuestions = [...mergedEPQuestions, ...mergedEPgfQuestions];
-
-  const getQuestionsForSubject = () => {
-    switch (subject) {
-      case "General Principles of Financial Planning":
-        return allGPQuestions;
-      case "Risk Management and Insurance Planning":
-        return allRMQuestions;
-      case "Investment Planning":
-        return allIPQuestions;
-      case "Tax Planning":
-        return allTPQuestions;
-      case "Retirement Savings and Income Planning":
-        return allRSQuestions;
-      case "Estate Planning":
-        return allEPQuestions;
-      default:
-        return [];
-    }
-  };
-
-  const questions = getQuestionsForSubject();
-
-  // Save progress to localStorage whenever states change
   useEffect(() => {
-    const progress = {
+    if (mainQuestions && gfQuestions) {
+      setQuestions([...mainQuestions, ...gfQuestions]);
+    }
+  }, [mainQuestions, gfQuestions]);
+
+  useEffect(() => {
+    saveQuizProgress(storageKey, {
       currentQuestionIndex,
       timeLeft,
       correctAnswersCount,
-    };
-    localStorage.setItem(storageKey, JSON.stringify(progress));
+    });
   }, [currentQuestionIndex, timeLeft, correctAnswersCount]);
 
-  // Timer logic
   useEffect(() => {
-    if (isLoading) return;
+    if (mainLoading || gfLoading) return;
 
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime > 0) {
-          return prevTime - 1;
-        } else {
-          handleNextQuestion(); // Move to the next question if time runs out
-          return 120; // Reset timer for next question
-        }
-      });
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : handleNextQuestion()));
     }, 1000);
 
-    return () => clearInterval(timer); // Cleanup the timer
-  }, [currentQuestionIndex, isLoading]);
+    return () => clearInterval(timer);
+  }, [currentQuestionIndex, mainLoading, gfLoading]);
 
-  // Track navigation away from the quiz page
   useEffect(() => {
+    const lastVisitedTime = localStorage.getItem(
+      `${subject}_quiz_lastVisitedTime`
+    );
+    if (lastVisitedTime) {
+      const elapsedTime = (Date.now() - parseInt(lastVisitedTime, 10)) / 1000;
+      if (elapsedTime > DEFAULT_TIME) setTimeLeft(DEFAULT_TIME);
+    }
+
     const handleBeforeUnload = () => {
-      localStorage.setItem(
-        `${subject}_subjectQuiz_lastVisitedTime`,
-        Date.now()
-      );
+      localStorage.setItem(`${subject}_quiz_lastVisitedTime`, Date.now());
     };
 
-    // Save the timestamp when navigating away
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      localStorage.setItem(
-        `${subject}_subjectQuiz_lastVisitedTime`,
-        Date.now()
-      ); // Also save on cleanup
+      localStorage.setItem(`${subject}_quiz_lastVisitedTime`, Date.now());
     };
   }, []);
 
-  // Reset timer if returning after a long time
-  useEffect(() => {
-    const lastVisitedTime = localStorage.getItem(
-      `${subject}_subjectQuiz_lastVisitedTime`
-    );
-    if (lastVisitedTime) {
-      const elapsedTime = (Date.now() - parseInt(lastVisitedTime, 10)) / 1000; // Convert to seconds
-      if (elapsedTime > 120) {
-        // If more than 2 minutes passed, reset timer
-        setTimeLeft(120);
-      }
-    }
-  }, []);
-
-  const handleAnswerSelection = (answerIndex) => {
-    setSelectedAnswer(answerIndex);
-  };
+  const handleAnswerSelection = (answerIndex) => setSelectedAnswer(answerIndex);
 
   const handleSubmit = () => {
-    if (selectedAnswer === questions[currentQuestionIndex].correctAnswerIndex) {
-      setCorrectAnswersCount((prevCount) => prevCount + 1); // Increment score for correct answer
+    if (
+      selectedAnswer === questions[currentQuestionIndex]?.correctAnswerIndex
+    ) {
+      setCorrectAnswersCount((prev) => prev + 1);
     }
-    setIsSubmitted(true); // Mark as submitted to display explanation
+    setIsSubmitted(true);
+  };
+
+  const resetQuestionState = (resetAll = false) => {
+    if (resetAll === true) {
+      setCurrentQuestionIndex(0);
+      setCorrectAnswersCount(0);
+    }
+    setSelectedAnswer(null);
+    setIsSubmitted(false);
+    setTimeLeft(DEFAULT_TIME);
+  };
+
+  const clearQuizProgress = () => {
+    localStorage.removeItem(storageKey);
+    localStorage.removeItem(`${subject}_quiz_lastVisitedTime`);
   };
 
   const handleNextQuestion = () => {
-    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    setSelectedAnswer(null);
-    setIsSubmitted(false);
-    setTimeLeft(120); // Reset timer for next question
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+      resetQuestionState();
+    } else {
+      handleFinishQuiz();
+    }
   };
 
   const handleFinishQuiz = () => {
-    // Clear progress for this subject
-    localStorage.removeItem(storageKey);
-    localStorage.removeItem(`${subject}_subjectQuiz_lastVisitedTime`);
-
-    // Navigate to dashboard with score
+    clearQuizProgress();
     navigate("/", {
-      state: {
-        subject: subject,
-        score: correctAnswersCount,
-        total: questions?.length,
-      },
+      state: { subject, score: correctAnswersCount, total: questions?.length },
     });
   };
 
   const handleRestartQuiz = () => {
-    // Clear progress and reset states
-    localStorage.removeItem(storageKey);
-    localStorage.removeItem(`${subject}_subjectQuiz_lastVisitedTime`);
-
+    clearQuizProgress();
     setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
-    setIsSubmitted(false);
-    setCorrectAnswersCount(0); // Reset score
-    setTimeLeft(120); // Reset timer
+    setCorrectAnswersCount(0);
+    resetQuestionState(true);
   };
 
-  if (isLoading)
+  if (mainLoading || gfLoading)
     return (
       <div className="flex justify-center items-center h-screen w-full">
         Loading...
       </div>
     );
-  if (error)
+
+  if (mainError || gfError)
     return (
       <div className="flex justify-center items-center h-screen w-full">
         Error loading questions
       </div>
     );
-  if (questions?.length === 0)
+
+  if (!questions?.length)
     return (
       <div className="flex justify-center items-center h-screen w-full">
-        No questions found for this subject
+        No questions found
       </div>
     );
 
   return (
     <div className="min-h-screen p-8 bg-gray-100">
+      {!userInfo?.isPremium && (
+        <h2 className="font-bold text-blue-900 text-center pb-3">
+          Free access is limited.{" "}
+          <Link to="/premium" className="text-pink-500 underline">
+            Upgrade to Premium
+          </Link>
+        </h2>
+      )}
+
       <h2 className="text-2xl mb-4">
         {subject} - Question {currentQuestionIndex + 1}/{questions?.length}
         <pre className="text-base pt-2 text-wrap">

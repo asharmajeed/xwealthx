@@ -31,6 +31,7 @@ const startTokenExpirationCheck = (token) => {
     const checkTokenValidity = () => {
       if (exp < Date.now() / 1000) {
         alert("Your session has expired! Please login again.");
+        localStorage.removeItem("userInfo");
         window.location.reload(); // Reload the page or redirect
       }
     };

@@ -1,33 +1,31 @@
 import express from "express";
 import { verifyJWT, authorizeAdmin } from "../middleware/authMiddleware.js";
-import { getQuestionModel } from "../models/questionModel.js";
+import {
+  addQuestion,
+  deleteQuestion,
+  getAllQuestions,
+  getAllQuestionsRandomOrder,
+  getFirst30Questions,
+  getRandom85Questions,
+  updateQuestion,
+} from "../controllers/subjectController.js";
 
 const router = express.Router();
 
-// Dynamic route for fetching/updating questions by subject
-router.get("/:subject", verifyJWT, authorizeAdmin, async (req, res) => {
-  const { subject } = req.params;
-  const Model = getQuestionModel(subject);
-  try {
-    const questions = await Model.find();
-    res.json(questions);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch questions" });
-  }
-});
+router.route("/random").get(verifyJWT, getAllQuestionsRandomOrder);
 
-router.put("/:subject/:id", verifyJWT, authorizeAdmin, async (req, res) => {
-  const { subject, id } = req.params;
-  const updates = req.body;
-  const Model = getQuestionModel(subject);
-  try {
-    const updatedQuestion = await Model.findByIdAndUpdate(id, updates, {
-      new: true,
-    });
-    res.json(updatedQuestion);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to update question" });
-  }
-});
+router.route("/limited/:subject").get(verifyJWT, getFirst30Questions);
+
+router.route("/random85/:subject").get(verifyJWT, getRandom85Questions);
+
+router
+  .route("/:subject/:id")
+  .put(verifyJWT, authorizeAdmin, updateQuestion)
+  .delete(verifyJWT, authorizeAdmin, deleteQuestion);
+
+router
+  .route("/:subject")
+  .get(verifyJWT, getAllQuestions)
+  .post(verifyJWT, authorizeAdmin, addQuestion);
 
 export default router;

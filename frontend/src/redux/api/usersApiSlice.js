@@ -1,5 +1,5 @@
 import { apiSlice } from "./apiSlice";
-import { USERS_URL } from "../../utils/constants";
+import { USERS_URL } from "../../constants";
 import { setCredentials } from "../features/authSlice";
 
 export const userApiSlice = apiSlice.injectEndpoints({
