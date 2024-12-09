@@ -65,6 +65,15 @@ const MentorSection = () => {
           {/* Mentor Sign-up Form */}
           <form className="space-y-6" onSubmit={onSubmit}>
             <div>
+              <input
+                type="text"
+                name="form-type"
+                defaultValue="Mentor Form"
+                hidden
+              />
+            </div>
+
+            <div>
               <label
                 className="block text-[#D1E7EA] font-medium mb-2"
                 htmlFor="fullName"

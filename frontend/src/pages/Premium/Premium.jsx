@@ -19,6 +19,7 @@ const Premium = () => {
   ];
 
   const [showForm, setShowForm] = useState(false);
+  const [result, setResult] = useState("");
 
   const [email, setEmail] = useState("");
   const [plan, setPlan] = useState("");
@@ -26,6 +27,31 @@ const Premium = () => {
   const handlePlanClick = async (plan) => {
     setShowForm(true);
     setPlan(plan);
+    setResult("");
+  };
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    setResult("Sending....");
+    const formData = new FormData(event.target);
+
+    formData.append("access_key", "10ffb4de-76de-4094-96a0-b8d934a04748");
+
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setResult("Form Submitted Successfully. You will get the email soon.");
+      setEmail("");
+      event.target.reset();
+    } else {
+      console.log("Error", data);
+      setResult(data.message);
+    }
   };
 
   return (
@@ -40,7 +66,15 @@ const Premium = () => {
               <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                 Request Invoice
               </h1>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={onSubmit}>
+                <div>
+                  <input
+                    type="text"
+                    name="form-type"
+                    defaultValue="Premium Subscription"
+                    hidden
+                  />
+                </div>
                 <div>
                   <label
                     htmlFor="email"
@@ -51,10 +85,12 @@ const Premium = () => {
                   <input
                     id="email"
                     type="email"
+                    name="email"
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-pink-500 focus:outline-none"
+                    required
                   />
                 </div>
                 <div>
@@ -67,6 +103,7 @@ const Premium = () => {
                   <input
                     id="plan"
                     type="text"
+                    name="plan"
                     placeholder="Enter plan name"
                     value={plan}
                     readOnly
@@ -82,6 +119,7 @@ const Premium = () => {
               </form>
             </div>
           </div>
+          <div className="mt-4 text-center">{result}</div>
           <h1
             onClick={() => setShowForm(false)}
             className="text-pink-500 underline text-center cursor-pointer pt-2"
