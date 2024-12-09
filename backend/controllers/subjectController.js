@@ -117,6 +117,9 @@ export const getRandom85Questions = async (req, res) => {
  * @param {import("express").Request} req
  * @param {import("express").Response} res
  */
+// Default pagination parameters
+const PAGE_SIZE = 100; // Adjust this based on your needs (e.g., 100 documents per page)
+
 export const getAllQuestionsRandomOrder = async (req, res) => {
   const { subjects, quizSessionId } = req.query;
 
@@ -137,15 +140,23 @@ export const getAllQuestionsRandomOrder = async (req, res) => {
       }
     }
 
-    // Fetch random questions for all subjects
+    // Fetch all questions for all subjects with pagination
     let allQuestions = [];
     for (const subject of subjectList) {
       const QuestionModel = getQuestionModel(subject);
-      const totalQuestions = await QuestionModel.countDocuments();
-      const questions = await QuestionModel.aggregate([
-        { $sample: { size: totalQuestions } },
-      ]);
-      allQuestions.push(...questions);
+
+      let page = 1;
+      let totalQuestions = await QuestionModel.countDocuments();
+      let questions;
+
+      // Fetch questions in pages until all questions are retrieved
+      while (questions = await QuestionModel.find()
+        .skip((page - 1) * PAGE_SIZE)
+        .limit(PAGE_SIZE)) {
+        allQuestions.push(...questions);
+        if (questions.length < PAGE_SIZE) break; // No more questions left
+        page++;
+      }
     }
 
     // Shuffle the merged questions using Fisher-Yates algorithm
@@ -155,12 +166,13 @@ export const getAllQuestionsRandomOrder = async (req, res) => {
     const newQuizSessionId = uuidv4();
 
     // Store shuffled questions in Redis with expiration (e.g., 1 hour)
-    await setQuizSession(newQuizSessionId, shuffledQuestions);
+    await setQuizSession(newQuizSessionId, shuffledQuestions, 3600); // Expires in 1 hour
 
     // Respond with the new quiz session ID and shuffled questions
-    res
-      .status(200)
-      .json({ quizSessionId: newQuizSessionId, questions: shuffledQuestions });
+    res.status(200).json({
+      quizSessionId: newQuizSessionId,
+      questions: shuffledQuestions,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
