@@ -24,7 +24,7 @@ function Subject() {
         </button>
       </div>
 
-      <h3 className="text-lg font-semibold text-gray-700 mt-6 mb-4">
+      {/* <h3 className="text-lg font-semibold text-gray-700 mt-6 mb-4">
         All Topics
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -37,7 +37,7 @@ function Subject() {
         <TopicCard title="Principles of counseling" icon="👥" />
         <TopicCard title="General principles of effective..." icon="👥👤" />
         <TopicCard title="Crisis event with severe consequences" icon="⚠️" />
-      </div>
+      </div> */}
 
       {showPopup && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -62,13 +62,13 @@ function Subject() {
   );
 }
 
-function TopicCard({ title, icon }) {
-  return (
-    <div className="bg-gray-100 shadow-md rounded-lg p-4 flex flex-col items-center text-center">
-      <div className="text-2xl mb-2">{icon}</div>
-      <p className="text-sm text-gray-700">{title}</p>
-    </div>
-  );
-}
+// function TopicCard({ title, icon }) {
+//   return (
+//     <div className="bg-gray-100 shadow-md rounded-lg p-4 flex flex-col items-center text-center">
+//       <div className="text-2xl mb-2">{icon}</div>
+//       <p className="text-sm text-gray-700">{title}</p>
+//     </div>
+//   );
+// }
 
 export default Subject;
