@@ -43,6 +43,7 @@ function App() {
       "/admin-dashboard",
       "/admin-dashboard/manage-users",
       "/admin-dashboard/subject-questions",
+      "/flashcards",
     ];
     if (userInfo) {
       paths.push("/");

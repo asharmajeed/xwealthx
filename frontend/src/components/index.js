@@ -9,6 +9,7 @@ import PrivateRoute from "./PrivateRoute/PrivateRoute";
 import Sidebar from "./Sidebar/Sidebar";
 import Navbar from "./Navbar/Navbar";
 import AdminRoute from "./Admin/AdminRoute";
+import Flashcard from "./Flashcard/Flashcard";
 
 export {
   AlternateComponent,
@@ -22,4 +23,5 @@ export {
   Sidebar,
   Navbar,
   AdminRoute,
+  Flashcard,
 };

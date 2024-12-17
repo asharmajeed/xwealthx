@@ -1,5 +1,6 @@
 import { useSubject } from "../../context/QuizContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { flashcards } from "../Flashcards/cards";
 
 const HomeLoggedIn = () => {
   const location = useLocation();
@@ -71,10 +72,13 @@ const HomeLoggedIn = () => {
         <div className="border border-gray-200 rounded-lg p-4 mb-4 shadow bg-white">
           <h3 className="text-lg font-bold mb-2">Flashcards</h3>
           <p className="text-gray-700">Practice Flashcards</p>
-          <p className="text-gray-500 mb-4">Available: 1,307</p>
-          <button className="px-4 py-2 border border-pink-600 text-pink-600 bg-white rounded-md hover:bg-pink-50">
-            Select Subjects
-          </button>
+          <p className="text-gray-500 mb-4">Available: {flashcards.length}</p>
+          <Link
+            to="/flashcards"
+            className="px-4 py-2 border border-pink-600 text-pink-600 bg-white rounded-md hover:bg-pink-50"
+          >
+            Flashcards
+          </Link>
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ import TutorForm from "./TutorForm/TutorForm";
 import AdminDashboard from "./Admin/AdminDashboard";
 import UsersList from "./Admin/UsersList";
 import QuestionsList from "./Admin/QuestionsList";
+import Flashcards from "./Flashcards/Flashcards";
 
 export {
   Home,
@@ -30,4 +31,5 @@ export {
   AdminDashboard,
   UsersList,
   QuestionsList,
+  Flashcards,
 };

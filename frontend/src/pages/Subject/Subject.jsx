@@ -26,8 +26,8 @@ function Subject() {
 
       {/* <h3 className="text-lg font-semibold text-gray-700 mt-6 mb-4">
         All Topics
-      </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      </h3> */}
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <TopicCard
           title="Client and planner attitudes, values, biases"
           icon="➕➖"

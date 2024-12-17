@@ -17,6 +17,7 @@ import {
   AdminDashboard,
   Exam,
   ExamDrills,
+  Flashcards,
   Home,
   Premium,
   QuestionsList,
@@ -76,6 +77,7 @@ const router = createBrowserRouter(
         <Route path="/exam-drills" element={<ExamDrills />} />
         <Route path="/exam/:subjectName" element={<Exam />} />
         <Route path="/premium" element={<Premium />} />
+        <Route path="/flashcards" element={<Flashcards />} />
       </Route>
 
       {/* Admin Routes */}

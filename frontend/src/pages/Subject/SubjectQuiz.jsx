@@ -172,7 +172,7 @@ const SubjectQuiz = () => {
 
       <h2 className="text-2xl mb-4">
         {subject} - Question {currentQuestionIndex + 1}/{questions?.length}
-        <pre className="text-base pt-2 text-wrap">
+        <pre className="text-base pt-2 text-wrap selection:bg-yellow-400">
           {questions[currentQuestionIndex]?.text}
         </pre>
       </h2>

@@ -135,7 +135,7 @@ const Exam = () => {
     <div className="min-h-screen p-8 bg-gray-100">
       <h2 className="text-2xl mb-4">
         {subject} Exam - Question {currentQuestionIndex + 1}/{questions?.length}
-        <pre className="text-base pt-2 text-wrap">
+        <pre className="text-base pt-2 text-wrap selection:bg-yellow-400">
           {questions[currentQuestionIndex]?.text}
         </pre>
       </h2>
