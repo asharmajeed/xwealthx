@@ -1,4 +1,3 @@
-import path from "path";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -21,9 +20,6 @@ app.use(
   })
 );
 app.use(cookieParser());
-
-const __dirname = path.resolve();
-app.use("/backend/uploads", express.static(path.join(__dirname + "/backend/uploads")));
 
 app.use("/api/auth", userRoutes);
 app.use("/api/questions", questionRoutes);
