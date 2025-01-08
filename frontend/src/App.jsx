@@ -43,6 +43,8 @@ function App() {
       "/admin-dashboard",
       "/admin-dashboard/manage-users",
       "/admin-dashboard/subject-questions",
+      "/admin-dashboard/add-case-study",
+      "/case-studies",
       "/flashcards",
     ];
     if (userInfo) {
