@@ -32,9 +32,14 @@ const Sidebar = ({ isSidebarOpen }) => {
         />
         <h4 className="text-lg font-semibold">{userInfo?.name}</h4>
         {userInfo?.isAdmin && (
-          <Link to="/admin-dashboard" className="text-pink-500 underline">
-            Admin Dashboard
-          </Link>
+          <>
+            <Link to="/admin-dashboard" className="text-pink-500 underline">
+              Admin Dashboard
+            </Link>
+            <Link to="/admin-dashboard/add-case-study" className="text-pink-500 underline">
+              Add Case Studies
+            </Link>
+          </>
         )}
       </div>
       <nav className="space-y-2 p-4">
@@ -79,6 +84,16 @@ const Sidebar = ({ isSidebarOpen }) => {
           }
         >
           📄 Exam Drills: 85 Questions in 3 Hours
+        </NavLink>
+        <NavLink
+          to="/case-studies"
+          className={({ isActive }) =>
+            `block px-3 py-2 rounded-md hover:bg-gray-200 ${
+              isActive && "bg-gray-200"
+            }`
+          }
+        >
+          📝 Case Studies
         </NavLink>
         <Link
           to="/tutor-form"

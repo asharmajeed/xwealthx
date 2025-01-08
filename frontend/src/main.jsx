@@ -15,6 +15,7 @@ import store from "./redux/store.js";
 import App from "./App.jsx";
 import {
   AdminDashboard,
+  AdminFileUpload,
   Exam,
   ExamDrills,
   Flashcards,
@@ -29,6 +30,7 @@ import {
   SubjectQuiz,
   SubjectQuizFree,
   TutorForm,
+  UserFileViewer,
   UsersList,
 } from "./pages";
 import { PrivateRoute, ConsultationForm, AdminRoute } from "./components";
@@ -78,6 +80,7 @@ const router = createBrowserRouter(
         <Route path="/exam/:subjectName" element={<Exam />} />
         <Route path="/premium" element={<Premium />} />
         <Route path="/flashcards" element={<Flashcards />} />
+        <Route path="/case-studies" element={<UserFileViewer />} />
       </Route>
 
       {/* Admin Routes */}
@@ -85,6 +88,7 @@ const router = createBrowserRouter(
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-dashboard/manage-users" element={<UsersList />} />
         <Route path="/admin-dashboard/subject-questions" element={<QuestionsList />} />
+        <Route path="/admin-dashboard/add-case-study" element={<AdminFileUpload />} />
       </Route>
     </Route>
   )

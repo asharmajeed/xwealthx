@@ -14,6 +14,8 @@ import AdminDashboard from "./Admin/AdminDashboard";
 import UsersList from "./Admin/UsersList";
 import QuestionsList from "./Admin/QuestionsList";
 import Flashcards from "./Flashcards/Flashcards";
+import AdminFileUpload from "./Admin/AdminFileUpload";
+import UserFileViewer from "./UserFileViewer/UserFileViewer";
 
 export {
   Home,
@@ -32,4 +34,6 @@ export {
   UsersList,
   QuestionsList,
   Flashcards,
+  AdminFileUpload,
+  UserFileViewer,
 };
