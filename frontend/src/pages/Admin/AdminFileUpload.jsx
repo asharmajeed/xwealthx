@@ -23,7 +23,7 @@ const AdminFileUpload = () => {
 
     try {
       setUploading(true);
-      const response = await fetch("http://localhost:5000/api/files/upload", {
+      const response = await fetch("https://xwealthx.vercel.app/api/files/upload", {
         method: "POST",
         body: formData,
       });
@@ -31,7 +31,7 @@ const AdminFileUpload = () => {
       if (response.ok) {
         setMessage("File uploaded successfully!");
         setSelectedFile(null);
-        const updatedFiles = await fetch("http://localhost:5000/api/files");
+        const updatedFiles = await fetch("https://xwealthx.vercel.app/api/files");
         if (updatedFiles.ok) {
           const data = await updatedFiles.json();
           setFiles(data);
@@ -55,12 +55,12 @@ const AdminFileUpload = () => {
       [id]: true, // Set the deleting state for the specific file
     }));
     try {
-      const response = await fetch(`http://localhost:5000/api/files/${id}`, {
+      const response = await fetch(`https://xwealthx.vercel.app/api/files/${id}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        const updatedFiles = await fetch("http://localhost:5000/api/files");
+        const updatedFiles = await fetch("https://xwealthx.vercel.app/api/files");
         if (updatedFiles.ok) {
           const data = await updatedFiles.json();
           setFiles(data);
@@ -85,7 +85,7 @@ const AdminFileUpload = () => {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/files");
+        const response = await fetch("https://xwealthx.vercel.app/api/files");
         if (response.ok) {
           const data = await response.json();
           setFiles(data);

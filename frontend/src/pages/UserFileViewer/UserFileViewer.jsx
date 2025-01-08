@@ -7,7 +7,7 @@ const UserFileViewer = () => {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/files");
+        const response = await fetch("https://xwealthx.vercel.app/api/files");
         if (response.ok) {
           const data = await response.json();
           setFiles(data);
