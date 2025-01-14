@@ -16,6 +16,7 @@ import QuestionsList from "./Admin/QuestionsList";
 import Flashcards from "./Flashcards/Flashcards";
 import AdminFileUpload from "./Admin/AdminFileUpload";
 import UserFileViewer from "./UserFileViewer/UserFileViewer";
+import CalculatorDrills from "./CalculatorDrills/CalculatorDrills";
 
 export {
   Home,
@@ -36,4 +37,5 @@ export {
   Flashcards,
   AdminFileUpload,
   UserFileViewer,
+  CalculatorDrills,
 };

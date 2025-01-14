@@ -16,6 +16,7 @@ import App from "./App.jsx";
 import {
   AdminDashboard,
   AdminFileUpload,
+  CalculatorDrills,
   Exam,
   ExamDrills,
   Flashcards,
@@ -81,6 +82,7 @@ const router = createBrowserRouter(
         <Route path="/premium" element={<Premium />} />
         <Route path="/flashcards" element={<Flashcards />} />
         <Route path="/case-studies" element={<UserFileViewer />} />
+        <Route path="/calculator-drills" element={<CalculatorDrills />} />
       </Route>
 
       {/* Admin Routes */}

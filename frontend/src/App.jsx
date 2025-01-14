@@ -46,6 +46,7 @@ function App() {
       "/admin-dashboard/add-case-study",
       "/case-studies",
       "/flashcards",
+      "/calculator-drills",
     ];
     if (userInfo) {
       paths.push("/");

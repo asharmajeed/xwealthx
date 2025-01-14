@@ -86,6 +86,16 @@ const Sidebar = ({ isSidebarOpen }) => {
           📄 Exam Drills: 85 Questions in 3 Hours
         </NavLink>
         <NavLink
+          to="/calculator-drills"
+          className={({ isActive }) =>
+            `block px-3 py-2 rounded-md hover:bg-gray-200 ${
+              isActive && "bg-gray-200"
+            }`
+          }
+        >
+          📱 Calculator Drills
+        </NavLink>
+        <NavLink
           to="/case-studies"
           className={({ isActive }) =>
             `block px-3 py-2 rounded-md hover:bg-gray-200 ${
